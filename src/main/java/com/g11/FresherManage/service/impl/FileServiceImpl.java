@@ -13,7 +13,7 @@ import java.nio.file.StandardCopyOption;
 import com.g11.FresherManage.exception.File.FileEmptyException;
 import com.g11.FresherManage.exception.File.FileException;
 import com.g11.FresherManage.exception.File.FileLocationException;
-import com.g11.FresherManage.properties.FileProperties;
+import com.g11.FresherManage.configs.FilePropertiesConfig;
 import com.g11.FresherManage.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -33,7 +33,7 @@ public class FileServiceImpl implements FileService {
     private final Path rootLocation;
 
     @Autowired
-    public FileServiceImpl(FileProperties properties) {
+    public FileServiceImpl(FilePropertiesConfig properties) {
 
         if(properties.getLocation().trim().isEmpty()){
             throw new FileLocationException("Not found upload location");

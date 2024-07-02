@@ -1,22 +1,39 @@
 package com.g11.FresherManage.controller;
 
+import com.g11.FresherManage.dto.ResponseGeneral;
+import com.g11.FresherManage.dto.response.FresherResponse;
+import com.g11.FresherManage.entity.Fresher;
 import com.g11.FresherManage.service.FresherService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
-@RequestMapping("/Api/V1/Fresher")
+@RequestMapping("/api/v1/freshers")
 @Slf4j
 @RequiredArgsConstructor
 public class FresherController {
     private final FresherService fresherService;
-//    @GetMapping("/freshers")
-//    public List<Fresher> getFreshers(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size) {
-//
-//        return fresherService.findAll(page,size);
-//    }
+    @GetMapping
+    public ResponseEntity<?> findAllFreshers(@RequestParam(defaultValue = "0") Integer page)  {
+        return new ResponseEntity<>(ResponseGeneral.of(200,"success",fresherService.findAllFreshers(page*10, (page+1)*10)), HttpStatus.OK);
+    }
+    @GetMapping("/{fresherId}")
+    public ResponseEntity<?> getFresherByFresherId(@PathVariable("fresherId") Integer fresherId)  {
+        return new ResponseEntity<>(
+                ResponseGeneral.of(200,"success",
+                fresherService.getFresherByFresherId(fresherId)),HttpStatus.OK);
+    }
+    @DeleteMapping("/{fresherId}")
+    public ResponseEntity<?> deleteFrdesherByFresherId(@PathVariable("fresherId") Integer fresherId)  {
+        fresherService.deleteFrdesherByFresherId(fresherId) ;
+        return new ResponseEntity<>(
+                ResponseGeneral.ofSuccess("Delete Fresher Success"),HttpStatus.NO_CONTENT);
+    }
 }

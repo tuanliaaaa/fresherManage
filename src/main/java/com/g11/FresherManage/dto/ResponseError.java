@@ -16,9 +16,10 @@ public class ResponseError <T>{
     private String message;
     private T error;
     private String timestamp;
+    private String code;
     public ResponseError(T responseGeneral, T httpStatus) {
     }
-    public static <T> ResponseError<T> of(int status, String message, T error) {
-        return of(status, message, error, DateUtils.getCurrentDateString());
+    public static <T> ResponseError<T> of(int status, String message, T error,String code) {
+        return of(status, message, error, DateUtils.getCurrentDateString(),code);
     }
 }

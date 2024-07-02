@@ -22,18 +22,18 @@ import java.util.Map;
 public class AdviceController {
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ResponseError<String>> handleAccessDeniedException(AccessDeniedException ex) {
-        return new ResponseEntity<>(ResponseError.of(401,"Access Denied",ex.getMessage()),HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(ResponseError.of(401,"Access Denied",ex.getMessage(),ex.getCode()),HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
 
     public ResponseEntity<ResponseError<String>> handleAuthenticationCredentialsNotFoundException(AuthenticationCredentialsNotFoundException ex) {
-        return new ResponseEntity<>(ResponseError.of(403,"Access Denied","Token hết hạn"),HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(ResponseError.of(403,"Access Denied","Token hết hạn","com.vmo.def"),HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ResponseError<String>> handleNotFoundException(NotFoundException ex) {
-        return new ResponseEntity<>(ResponseError.of(400,"Not Found",ex.getMessage()),HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ResponseError.of(400,"Not Found",ex.getMessage(), ex.getCode()),HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseError<Map<String ,String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
@@ -43,7 +43,7 @@ public class AdviceController {
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
         });
-        return new ResponseEntity<>(ResponseError.of(400,"validate error",errors),HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(ResponseError.of(400,"validate error",errors,"com.cmo.validate"),HttpStatus.BAD_REQUEST);
     }
 
 }

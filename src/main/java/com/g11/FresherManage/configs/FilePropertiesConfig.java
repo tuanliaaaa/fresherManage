@@ -1,9 +1,9 @@
-package com.g11.FresherManage.properties;
+package com.g11.FresherManage.configs;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("storage")
-public class FileProperties {
+public class FilePropertiesConfig {
 
     /**
      * Folder location for storing files
