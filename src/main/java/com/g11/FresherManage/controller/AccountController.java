@@ -15,15 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/User")
+@RequestMapping("api/v1/accounts")
 @Slf4j
 @RequiredArgsConstructor
-public class UserController {
+public class AccountController {
     private final AccountService accountService;
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("")
-    public ResponseEntity<ResponseGeneral<List<Account>>> findAllUser(){
-        ResponseGeneral<List<Account>> responseGeneral= ResponseGeneral.of(200,"success",accountService.findAllAccounts());
+    @GetMapping("/infor")
+    public ResponseEntity<?> findInforAccountLogin(){
+        ResponseGeneral<?> responseGeneral= ResponseGeneral.of(200,"success",accountService.findInforAccountLogin());
         return new ResponseEntity<>(responseGeneral, HttpStatus.OK);
     }
 }

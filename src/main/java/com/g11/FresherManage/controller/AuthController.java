@@ -2,7 +2,7 @@ package com.g11.FresherManage.controller;
 
 import com.g11.FresherManage.dto.ResponseGeneral;
 import com.g11.FresherManage.dto.request.LoginRequest;
-import com.g11.FresherManage.dto.response.InforResponse;
+import com.g11.FresherManage.dto.response.InforAccountLoginResponse;
 import com.g11.FresherManage.dto.response.LoginResponse;
 import com.g11.FresherManage.service.AccountService;
 import jakarta.validation.Valid;
@@ -32,11 +32,11 @@ public class AuthController {
         ResponseGeneral<LoginResponse> responseGeneral=ResponseGeneral.ofCreated("success", accountService.login(loginRequest));
         return new ResponseEntity<>(responseGeneral, HttpStatus.CREATED);
     }
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("infor/{idTeam}")
-    public ResponseEntity<ResponseGeneral<InforResponse>> infor(@PathVariable Integer idTeam){
-        ResponseGeneral<InforResponse> responseGeneral=ResponseGeneral.ofCreated("success", accountService.infor(idTeam));
-        return new ResponseEntity<>(responseGeneral, HttpStatus.CREATED);
-    }
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @GetMapping("infor/{idTeam}")
+//    public ResponseEntity<ResponseGeneral<InforAccountLoginResponse>> infor(@PathVariable Integer idTeam){
+//        ResponseGeneral<InforAccountLoginResponse> responseGeneral=ResponseGeneral.ofCreated("success", accountService.infor(idTeam));
+//        return new ResponseEntity<>(responseGeneral, HttpStatus.CREATED);
+//    }
 
 }

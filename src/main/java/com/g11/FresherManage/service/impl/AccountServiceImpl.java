@@ -1,7 +1,7 @@
 package com.g11.FresherManage.service.impl;
 
 import com.g11.FresherManage.dto.request.LoginRequest;
-import com.g11.FresherManage.dto.response.InforResponse;
+import com.g11.FresherManage.dto.response.InforAccountLoginResponse;
 import com.g11.FresherManage.dto.response.LoginResponse;
 import com.g11.FresherManage.entity.Account;
 import com.g11.FresherManage.exception.base.AccessDeniedException;
@@ -64,15 +64,14 @@ public class AccountServiceImpl implements AccountService {
         return response;
     }
     @Override
-    public InforResponse infor(Integer idTeam) {
+    public InforAccountLoginResponse findInforAccountLogin() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new AccessDeniedException();
-        }
         String username =  (String) authentication.getPrincipal();
         Account account= accountRepository.findByUsername(username).orElseThrow(UsernameNotFoundException::new);
-        InforResponse inforResponse = new InforResponse();
-        inforResponse.setIduser(account.getIdUser());
-        return inforResponse;
+        InforAccountLoginResponse inforAccountLoginResponse = new InforAccountLoginResponse();
+        inforAccountLoginResponse.setAvatar(account.getAvatar());
+        inforAccountLoginResponse.setUsername(username);
+        inforAccountLoginResponse.setIs_active(account.getIs_active());
+        return inforAccountLoginResponse;
     }
 }
