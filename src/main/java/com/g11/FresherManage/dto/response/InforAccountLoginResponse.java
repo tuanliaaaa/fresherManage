@@ -5,12 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class InforResponse {
+public class InforAccountLoginResponse {
     private int iduser;
-    private String potition;
+    private String dtype;
+    private String username;
+    private String avatar;
+    private Boolean is_active;
 }
