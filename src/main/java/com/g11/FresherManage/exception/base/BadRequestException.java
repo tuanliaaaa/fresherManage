@@ -5,7 +5,7 @@ import static com.g11.FresherManage.constants.FresherManagerConstants.StatusExce
 
 public class BadRequestException extends BaseException {
   public BadRequestException() {
-    setCode("com.ncsgroup.profiling.exception.base.BadRequestException");
+    setCode("com.g11.FresherManage.exception.base.BadRequestException");
     setStatus(BAD_REQUEST);
   }
 }

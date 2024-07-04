@@ -13,5 +13,5 @@ public class InforAccountLoginResponse {
     private String dtype;
     private String username;
     private String avatar;
-    private Boolean is_active;
+    private String is_active;
 }

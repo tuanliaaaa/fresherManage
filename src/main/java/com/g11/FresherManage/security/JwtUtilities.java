@@ -1,5 +1,6 @@
 package com.g11.FresherManage.security;
 
+import com.g11.FresherManage.exception.account.UsernameNotFoundException;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,9 @@ public class JwtUtilities{
     @Value("${jwt.expiration.ms}")
     private Long jwtExpiration;
 
+    @Value("${jwtRefresh.expiration.ms}")
+    private Long jwtRefreshExpiration;
+
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -48,12 +52,15 @@ public class JwtUtilities{
     }
 
     public String generateToken(String email , List<String> roles) {
-
         return Jwts.builder().setSubject(email).claim("role",roles).setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(Date.from(Instant.now().plus(jwtExpiration, ChronoUnit.MILLIS)))
                 .signWith(SignatureAlgorithm.HS256, secret).compact();
     }
-
+    public String generateRefreshToken(String email , List<String> roles) {
+        return Jwts.builder().setSubject(email).claim("role",roles).setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(Date.from(Instant.now().plus(jwtRefreshExpiration, ChronoUnit.MILLIS)))
+                .signWith(SignatureAlgorithm.HS256, secret).compact();
+    }
     public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(secret).parseClaimsJws(token);

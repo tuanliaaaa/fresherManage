@@ -1,8 +1,11 @@
 package com.g11.FresherManage.exception.base;
 
-public class AccessDeniedException extends BaseException{
+import static com.g11.FresherManage.constants.FresherManagerConstants.StatusException.FORBIDDEN;
+
+    public class AccessDeniedException extends BaseException{
     public AccessDeniedException() {
-        setCode("com.ncsgroup.profiling.exception.base.AccessDeniedException");
-        setStatus(403);
+        setCode("com.11.FresherManage.exception.base.AccessDeniedException");
+        setStatus(FORBIDDEN);
+        setMessage("Access Denied");
     }
 }

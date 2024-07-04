@@ -21,8 +21,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AdviceController {
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ResponseError<String>> handleAccessDeniedException(AccessDeniedException ex) {
-        return new ResponseEntity<>(ResponseError.of(401,"Access Denied",ex.getMessage(),ex.getCode()),HttpStatus.UNAUTHORIZED);
+    public ResponseEntity<ResponseError<?>> handleAccessDeniedException(AccessDeniedException ex) {
+        return new ResponseEntity<>(ResponseError.of(401,ex.getMessage(),ex.getParams(),ex.getCode()),HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)

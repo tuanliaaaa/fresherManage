@@ -2,7 +2,7 @@
 
     import com.g11.FresherManage.entity.Account;
     import com.g11.FresherManage.repository.AccountRepository;
-    import com.g11.FresherManage.exception.Account.UsernameNotFoundException;
+    import com.g11.FresherManage.exception.account.UsernameNotFoundException;
     import lombok.RequiredArgsConstructor;
     import org.springframework.security.core.GrantedAuthority;
     import org.springframework.security.core.authority.SimpleGrantedAuthority;

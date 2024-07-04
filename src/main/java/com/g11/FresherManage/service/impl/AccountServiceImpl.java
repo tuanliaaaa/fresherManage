@@ -4,16 +4,16 @@ import com.g11.FresherManage.dto.request.LoginRequest;
 import com.g11.FresherManage.dto.response.InforAccountLoginResponse;
 import com.g11.FresherManage.dto.response.LoginResponse;
 import com.g11.FresherManage.entity.Account;
-import com.g11.FresherManage.exception.base.AccessDeniedException;
+import com.g11.FresherManage.exception.account.AccountIsLockException;
 import com.g11.FresherManage.repository.AccountRepository;
 import com.g11.FresherManage.security.JwtUtilities;
 import com.g11.FresherManage.service.AccountService;
-import  com.g11.FresherManage.exception.Account.UsernameNotFoundException;
+import  com.g11.FresherManage.exception.account.UsernameNotFoundException;
 import com.g11.FresherManage.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -33,18 +33,18 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public LoginResponse login(LoginRequest loginRequest) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
-
-
-            Account user = accountRepository.findByUsername(authentication.getName()).orElseThrow(() -> new UsernameNotFoundException());
-            List<String> rolesNames = accountRepository.findRolesByUsername(user.getUsername());
-            String token = jwtUtilities.generateToken(user.getUsername(), rolesNames);
-            return new LoginResponse(token);
-        } catch (Exception ex) {
-            throw new UsernameNotFoundException();
-        }
+            Account account = accountRepository.findByUsername(loginRequest.getUsername())
+                    .orElseThrow(UsernameNotFoundException::new);
+            String salt = account.getPassword().substring(0,29);
+            String hashedPassword = BCrypt.hashpw(loginRequest.getPassword(), salt);
+            if (!hashedPassword.equals(account.getPassword())) {
+                throw new UsernameNotFoundException();
+            }
+            if(account.getIs_active().equals("lock"))throw new AccountIsLockException();
+            List<String> rolesNames = accountRepository.findRolesByUsername(account.getUsername());
+            String token = jwtUtilities.generateToken(account.getUsername(), rolesNames);
+            String refreshToken= jwtUtilities.generateRefreshToken(account.getUsername(),rolesNames);
+            return new LoginResponse(token,refreshToken);
     }
 
     @Override

@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
         import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 @Slf4j
 @RequiredArgsConstructor
 public class AuthController {
@@ -28,7 +29,7 @@ public class AuthController {
 
     @PostMapping("login")
     public ResponseEntity<ResponseGeneral<LoginResponse>> login(@Valid  @RequestBody LoginRequest loginRequest){
-        System.out.println(new BCryptPasswordEncoder().encode("amdin"));
+        System.out.println(new BCryptPasswordEncoder().encode("tuan"));
         ResponseGeneral<LoginResponse> responseGeneral=ResponseGeneral.ofCreated("success", accountService.login(loginRequest));
         return new ResponseEntity<>(responseGeneral, HttpStatus.CREATED);
     }

@@ -15,5 +15,5 @@ public class Account {
     private String username;
     private String password;
     private String avatar;
-    private Boolean is_active;
+    private String is_active;
 }

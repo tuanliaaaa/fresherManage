@@ -1,4 +1,4 @@
-package com.g11.FresherManage.exception.Account;
+package com.g11.FresherManage.exception.account;
 
 import com.g11.FresherManage.exception.base.NotFoundException;
 
