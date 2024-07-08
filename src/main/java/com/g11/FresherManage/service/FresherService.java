@@ -11,4 +11,5 @@ public interface FresherService {
     List<FresherResponse> findAllFreshers(int offset, int limit) ;
     FresherResponse getFresherByFresherId(Integer fresherId);
     Void deleteFrdesherByFresherId(Integer fresherId);
+    FresherResponse findByUsername(String username);
 }
