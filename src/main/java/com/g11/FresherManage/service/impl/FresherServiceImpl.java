@@ -41,4 +41,10 @@ public class FresherServiceImpl implements FresherService {
         fresherRepository.save(fresher);
         return null;
     }
+    @Override
+    public FresherResponse findByUsername(String username){
+        Fresher fresher= fresherRepository.findByUsername(username).orElseThrow(FresherNotFoundException::new);
+        return MapperUtils.toDTO(fresher, FresherResponse.class);
+    }
+
 }

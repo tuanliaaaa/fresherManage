@@ -16,4 +16,6 @@ public interface FresherRepository extends JpaRepository<Fresher, Integer> {
     List<Fresher> findFreshersWithPagination(@Param("offset") int offset, @Param("limit") int limit);
     @Query(value = "SELECT * FROM employee WHERE dtype = 'Fresher' and employee_id=:fresherId", nativeQuery = true)
     Optional<Fresher> getByFresherId(@Param("fresherId") Integer fresherId);
+    @Query(value = "SELECT * FROM employee WHERE dtype = 'Fresher' and employee_username=:username", nativeQuery = true)
+    Optional<Fresher> findByUsername(String username);
 }

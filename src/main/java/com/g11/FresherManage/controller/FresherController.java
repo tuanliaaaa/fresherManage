@@ -9,8 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -20,6 +22,15 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class FresherController {
     private final FresherService fresherService;
+    @PreAuthorize("hasRole('Fresher')")
+    @GetMapping("/me")
+    public ResponseEntity<?> getFresherInfo(Principal principal) {
+        String username = principal.getName();
+        return new ResponseEntity<>(
+                ResponseGeneral.of(200,"success",
+                        fresherService.findByUsername(username)),
+                        HttpStatus.OK);
+    }
     @GetMapping
     public ResponseEntity<?> findAllFreshers(@RequestParam(defaultValue = "0") Integer page)  {
         return new ResponseEntity<>(ResponseGeneral.of(200,"success",fresherService.findAllFreshers(page*10, (page+1)*10)), HttpStatus.OK);
