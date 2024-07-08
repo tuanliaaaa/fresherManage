@@ -1,4 +1,4 @@
-package com.g11.FresherManage.exception.Fresher;
+package com.g11.FresherManage.exception.fresher;
 
 import com.g11.FresherManage.exception.base.NotFoundException;
 

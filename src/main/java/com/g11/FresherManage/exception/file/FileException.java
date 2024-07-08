@@ -1,4 +1,4 @@
-package com.g11.FresherManage.exception.File;
+package com.g11.FresherManage.exception.file;
 
 import com.g11.FresherManage.exception.base.BaseException;
 

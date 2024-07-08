@@ -4,8 +4,7 @@ package com.g11.FresherManage.service.impl;
 
 import com.g11.FresherManage.dto.response.FresherResponse;
 import com.g11.FresherManage.entity.Fresher;
-import com.g11.FresherManage.exception.Fresher.FresherNotFoundException;
-import com.g11.FresherManage.exception.base.NotFoundException;
+import com.g11.FresherManage.exception.fresher.FresherNotFoundException;
 import com.g11.FresherManage.repository.FresherRepository;
 import com.g11.FresherManage.service.FresherService;
 import com.g11.FresherManage.utils.MapperUtils;
@@ -13,11 +12,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor

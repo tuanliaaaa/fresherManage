@@ -10,9 +10,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-import com.g11.FresherManage.exception.File.FileEmptyException;
-import com.g11.FresherManage.exception.File.FileException;
-import com.g11.FresherManage.exception.File.FileLocationException;
+import com.g11.FresherManage.exception.file.FileEmptyException;
+import com.g11.FresherManage.exception.file.FileException;
+import com.g11.FresherManage.exception.file.FileLocationException;
 import com.g11.FresherManage.configs.FilePropertiesConfig;
 import com.g11.FresherManage.service.FileService;
 import org.springframework.beans.factory.annotation.Autowired;

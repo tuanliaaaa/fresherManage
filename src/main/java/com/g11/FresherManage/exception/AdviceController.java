@@ -5,6 +5,7 @@ import com.g11.FresherManage.exception.base.AccessDeniedException;
 import com.g11.FresherManage.exception.base.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -20,6 +21,15 @@ import java.util.Map;
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class AdviceController {
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<Object> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("error", "User not found");
+        response.put("message", ex.getMessage());
+        response.put("status", HttpStatus.NOT_FOUND.value());
+
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ResponseError<?>> handleAccessDeniedException(AccessDeniedException ex) {
         return new ResponseEntity<>(ResponseError.of(401,ex.getMessage(),ex.getParams(),ex.getCode()),HttpStatus.UNAUTHORIZED);

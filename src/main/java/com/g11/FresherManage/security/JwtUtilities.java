@@ -30,6 +30,27 @@ public class JwtUtilities{
     @Value("${jwtRefresh.expiration.ms}")
     private Long jwtRefreshExpiration;
 
+    // Get Token from request
+    public String getToken (HttpServletRequest httpServletRequest) {
+        final String bearerToken = httpServletRequest.getHeader("Authorization");
+        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer "))
+        {return bearerToken.substring(7,bearerToken.length()); } // The part after "Bearer "
+        return null;
+    }
+
+    // Ren Access Token
+    public String generateToken(String userName ) {
+        return Jwts.builder().setSubject(userName).setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(Date.from(Instant.now().plus(jwtExpiration, ChronoUnit.MILLIS)))
+                .signWith(SignatureAlgorithm.HS256, secret).compact();
+    }
+
+    // Ren Refreshes Token
+    public String generateRefreshToken(String userName ) {
+        return Jwts.builder().setSubject(userName).setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(Date.from(Instant.now().plus(jwtRefreshExpiration, ChronoUnit.MILLIS)))
+                .signWith(SignatureAlgorithm.HS256, secret).compact();
+    }
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -43,24 +64,16 @@ public class JwtUtilities{
     }
     public Date extractExpiration(String token) { return extractClaim(token, Claims::getExpiration); }
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String email = extractUsername(token);
-        return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
-    }
     public Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(String email , List<String> roles) {
-        return Jwts.builder().setSubject(email).claim("role",roles).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(Date.from(Instant.now().plus(jwtExpiration, ChronoUnit.MILLIS)))
-                .signWith(SignatureAlgorithm.HS256, secret).compact();
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        final String email = extractUsername(token);
+        return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
-    public String generateRefreshToken(String email , List<String> roles) {
-        return Jwts.builder().setSubject(email).claim("role",roles).setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(Date.from(Instant.now().plus(jwtRefreshExpiration, ChronoUnit.MILLIS)))
-                .signWith(SignatureAlgorithm.HS256, secret).compact();
-    }
+
+
     public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
@@ -82,13 +95,6 @@ public class JwtUtilities{
             log.trace("JWT token compact of handler are invalid trace: {}", e);
         }
         return false;
-    }
-
-    public String getToken (HttpServletRequest httpServletRequest) {
-        final String bearerToken = httpServletRequest.getHeader("Authorization");
-        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer "))
-        {return bearerToken.substring(7,bearerToken.length()); } // The part after "Bearer "
-        return null;
     }
 
 }

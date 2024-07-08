@@ -2,7 +2,7 @@
 
     import com.g11.FresherManage.entity.Account;
     import com.g11.FresherManage.repository.AccountRepository;
-    import com.g11.FresherManage.exception.account.UsernameNotFoundException;
+    import org.springframework.security.core.userdetails.UsernameNotFoundException;
     import lombok.RequiredArgsConstructor;
     import org.springframework.security.core.GrantedAuthority;
     import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -22,8 +22,8 @@
         private final AccountRepository accountRepository;
 
         @Override
-        public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-            Account user = accountRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException());
+        public UserDetails loadUserByUsername (String username)  {
+            Account user = accountRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("username "  + " not found"));
             List<String> userRoles = accountRepository.findRolesByUsername(user.getUsername());
             // Tạo danh sách quyền từ role của Employee
             List<GrantedAuthority> authorities = userRoles.stream()
@@ -34,8 +34,5 @@
                     .password(user.getPassword())
                     .authorities(authorities)
                     .build();
-
         }
-
-
     }

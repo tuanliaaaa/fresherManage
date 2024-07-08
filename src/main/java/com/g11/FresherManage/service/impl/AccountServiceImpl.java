@@ -42,8 +42,8 @@ public class AccountServiceImpl implements AccountService {
             }
             if(account.getIs_active().equals("lock"))throw new AccountIsLockException();
             List<String> rolesNames = accountRepository.findRolesByUsername(account.getUsername());
-            String token = jwtUtilities.generateToken(account.getUsername(), rolesNames);
-            String refreshToken= jwtUtilities.generateRefreshToken(account.getUsername(),rolesNames);
+            String token = jwtUtilities.generateToken(account.getUsername());
+            String refreshToken= jwtUtilities.generateRefreshToken(account.getUsername());
             return new LoginResponse(token,refreshToken);
     }
 

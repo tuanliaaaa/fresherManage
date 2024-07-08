@@ -36,4 +36,6 @@ public class FresherController {
         return new ResponseEntity<>(
                 ResponseGeneral.ofSuccess("Delete Fresher Success"),HttpStatus.NO_CONTENT);
     }
+
+
 }
