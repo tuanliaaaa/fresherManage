@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class CenterController {
     private final CenterService centerService;
-    @GetMapping("/{centerId}")
-    public ResponseEntity<?> getCenterByCenterId(@PathVariable("centerId") Integer centerId)  {
-        return new ResponseEntity<>(
-                ResponseGeneral.of(200,"success",
-                centerService.getCenterByCenterId(centerId)), HttpStatus.OK);
-    }
+//    @GetMapping("/{centerId}")
+//    public ResponseEntity<?> getCenterByCenterId(@PathVariable("centerId") Integer centerId)  {
+//        return new ResponseEntity<>(
+//                ResponseGeneral.of(200,"success",
+//                centerService.getCenterByCenterId(centerId)), HttpStatus.OK);
+//    }
 }

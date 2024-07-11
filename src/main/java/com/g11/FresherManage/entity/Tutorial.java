@@ -11,8 +11,8 @@ public class Tutorial {
     private int tutorialId;
     @ManyToOne
     @JoinColumn(name = "mentor_id")
-    private Mentor account;
+    private Account mentor;
     @ManyToOne
     @JoinColumn(name = "fresher_id")
-    private Fresher fresher;
+    private Account fresher;
 }

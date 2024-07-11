@@ -9,10 +9,13 @@ public class Result {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int resultId;
+    private Integer test1;
+    private Integer test2;
+    private Integer test3;
     @OneToOne
-    @JoinColumn(name = "tested_id")
-    private Tested tested;
+    @JoinColumn(name = "fresher_id")
+    private Account fresher;
     @OneToOne
     @JoinColumn(name = "mentor_id")
-    private Mentor mentor;
+    private Account mentor;
 }

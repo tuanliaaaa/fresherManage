@@ -13,7 +13,7 @@ public class HistoryWorking {
     @JoinColumn(name = "working_id")
     private Working working;
     @ManyToOne
-    @JoinColumn(name = "employee_id")
-    private Employee employee;
+    @JoinColumn(name = "account_id")
+    private Account account;
 
 }

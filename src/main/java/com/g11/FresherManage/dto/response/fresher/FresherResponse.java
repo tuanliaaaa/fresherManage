@@ -1,10 +1,7 @@
-package com.g11.FresherManage.dto.response;
+package com.g11.FresherManage.dto.response.fresher;
 
-import com.g11.FresherManage.entity.Account;
 import com.g11.FresherManage.entity.Language;
 import com.g11.FresherManage.entity.Working;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

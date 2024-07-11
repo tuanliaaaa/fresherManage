@@ -1,9 +1,6 @@
 package com.g11.FresherManage.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Data
@@ -15,5 +12,13 @@ public class Account {
     private String username;
     private String password;
     private String avatar;
+    private String firstName;
+    private String lastName;
+    private String email;
+    private String phone;
+    private String potition;
     private String is_active;
+    @JoinColumn(name = "working_id")
+    @OneToOne(cascade = CascadeType.ALL)
+    private  Working curentWorking;
 }
