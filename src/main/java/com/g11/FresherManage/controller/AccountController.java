@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -22,8 +23,8 @@ public class AccountController {
     private final AccountService accountService;
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/infor")
-    public ResponseEntity<?> findInforAccountLogin(){
-        ResponseGeneral<?> responseGeneral= ResponseGeneral.of(200,"success",accountService.findInforAccountLogin());
+    public ResponseEntity<?> findInforAccountLogin(Principal principal){
+        ResponseGeneral<?> responseGeneral= ResponseGeneral.of(200,"success",accountService.findInforAccountLogin(principal));
         return new ResponseEntity<>(responseGeneral, HttpStatus.OK);
     }
 }

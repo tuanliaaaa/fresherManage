@@ -1,5 +1,6 @@
 package com.g11.FresherManage.dataInitializer;
 import com.g11.FresherManage.entity.Role;
+import com.g11.FresherManage.entity.Working;
 import com.g11.FresherManage.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
@@ -11,6 +12,7 @@ public class RoleInitializer implements ApplicationListener<ContextRefreshedEven
 
     @Autowired
     private RoleRepository roleRepository;
+
 
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {

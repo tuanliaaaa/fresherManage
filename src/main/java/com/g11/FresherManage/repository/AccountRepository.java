@@ -1,6 +1,6 @@
 package com.g11.FresherManage.repository;
 
-
+import com.g11.FresherManage.dto.response.fresher.FresherResponse;
 import com.g11.FresherManage.entity.Account;
 import com.g11.FresherManage.entity.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,5 +18,15 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     List<String> findRolesByUsername(@Param("username") String username);
     @Query("SELECT ur.role FROM AccountRole ur WHERE ur.account.username = :username")
     List<Role> findRolesAllByUsername(@Param("username") String username);
+    @Query("SELECT ac FROM Account as ac WHERE ac.username= :username AND ac.potition = 'FRESHER'" )
+    Optional<Account> findFresherByUsername(@Param("username") String username);
+    @Query(value = "SELECT * FROM Account WHERE potition = 'FRESHER' LIMIT :limit OFFSET :offset", nativeQuery = true)
+    List<Account> findFreshersWithPagination(@Param("offset") int offset, @Param("limit") int limit);
+
+    @Query("SELECT ac FROM Account as ac WHERE ac.idUser=:fresherId AND ac.potition = 'FRESHER'" )
+    Optional<Account> getByFresherId(Integer fresherId);
+
+    @Query(value = "SELECT * FROM Account WHERE potition = 'FRESHER' LIMIT :limit OFFSET :offset", nativeQuery = true)
+    List<Account> findFreshersForAnotherAdmin(@Param("offset") int offset, @Param("limit") int limit);
 
 }

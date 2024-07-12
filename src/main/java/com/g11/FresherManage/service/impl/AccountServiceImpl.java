@@ -18,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.*;
 
 @Service
@@ -64,13 +65,11 @@ public class AccountServiceImpl implements AccountService {
         return response;
     }
     @Override
-    public InforAccountLoginResponse findInforAccountLogin() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username =  (String) authentication.getPrincipal();
-        Account account= accountRepository.findByUsername(username).orElseThrow(UsernameNotFoundException::new);
+    public InforAccountLoginResponse findInforAccountLogin(Principal principal) {
+        Account account= accountRepository.findByUsername(principal.getName()).orElseThrow(UsernameNotFoundException::new);
         InforAccountLoginResponse inforAccountLoginResponse = new InforAccountLoginResponse();
         inforAccountLoginResponse.setAvatar(account.getAvatar());
-        inforAccountLoginResponse.setUsername(username);
+        inforAccountLoginResponse.setUsername(principal.getName());
         inforAccountLoginResponse.setIs_active(account.getIs_active());
         return inforAccountLoginResponse;
     }
