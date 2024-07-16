@@ -1,6 +1,7 @@
 package com.g11.FresherManage.service.impl;
 
 import com.g11.FresherManage.dto.response.CenterResponse;
+import com.g11.FresherManage.dto.response.MarketResponse;
 import com.g11.FresherManage.entity.Account;
 import com.g11.FresherManage.entity.Working;
 import com.g11.FresherManage.exception.account.UsernameNotFoundException;
@@ -73,8 +74,9 @@ public class CenterServiceImpl implements CenterService {
     @Override
     public List<CenterResponse> findAllCenterByMarketID(Principal principal,Integer marketId)
     {
-        List<Working> centerList = workingRepository.findByMarket_MarketId(marketIdd );
+        List<Working> centerList = workingRepository.findByMarket_MarketId(marketId);
         return  MapperUtils.toDTOs(centerList,CenterResponse.class);
     }
+
 
 }

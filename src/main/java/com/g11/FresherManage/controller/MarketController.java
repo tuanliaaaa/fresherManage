@@ -1,8 +1,7 @@
 package com.g11.FresherManage.controller;
 
 import com.g11.FresherManage.dto.ResponseGeneral;
-import com.g11.FresherManage.dto.response.fresher.FresherResponse;
-import com.g11.FresherManage.service.FresherService;
+import com.g11.FresherManage.service.CenterService;
 import com.g11.FresherManage.service.MarketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +11,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/markets")
@@ -20,27 +18,40 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MarketController {
     private final MarketService marketService;
-
-    @GetMapping("/{marketId}")
-    public ResponseEntity<?> getMarketByMarketId(@PathVariable("marketId") Integer marketId)  {
-        return new ResponseEntity<>(
-                ResponseGeneral.of(200,"success",
-                marketService.getMarketById(marketId))
-                ,HttpStatus.OK);
-    }
-
-    @GetMapping()
-    public ResponseEntity<?> findAll()  {
-        return new ResponseEntity<>(
-                ResponseGeneral.of(200,"success",
-                        marketService.findAllMarkets())
-                ,HttpStatus.OK);
-    }
+    private final CenterService centerService;
+    @PreAuthorize("hasAnyRole('ADMIN','MARKETDIRECTOR')")
     @GetMapping("/me")
-    public ResponseEntity<?> deleteFrdesherByFresherId()  {
+    public ResponseEntity<?> getMyMarketInfor(Principal principal)
+    {
         return new ResponseEntity<>(
                 ResponseGeneral.of(200,"success",
-                        marketService.findAllMarkets())
-                ,HttpStatus.OK);
+                        marketService.findMyMarket(principal)), HttpStatus.OK);
+    }
+
+
+    @PreAuthorize("hasAnyRole('ADMIN','MENTOR','MARKETDIRECTOR','CENTERDIRECTOR')")
+    @GetMapping("/{centerId}")
+    public ResponseEntity<?> getCenterByCenterId(Principal principal,
+                                                 @PathVariable("centerId") Integer centerId)
+    {
+        return new ResponseEntity<>(
+                ResponseGeneral.of(200,"success",
+                        centerService.getCenterByCenterId(principal,centerId)), HttpStatus.OK);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("")
+    public ResponseEntity<?> findAllCenter(Principal principal,
+                                           @RequestParam(required = false) Integer page)
+    {
+        return new ResponseEntity<>(
+                ResponseGeneral.of(200,"success",
+                        centerService.findAllCenter(principal,page)), HttpStatus.OK);
+    }
+    @GetMapping("/market/{marketId}")
+    public ResponseEntity<?> findAllCenterByMarketID(Principal principal, @PathVariable("marketId") Integer marketId)  {
+        return new ResponseEntity<>(
+                ResponseGeneral.of(200,"success",
+                        centerService.findAllCenterByMarketID(principal,marketId)), HttpStatus.OK);
     }
 }
