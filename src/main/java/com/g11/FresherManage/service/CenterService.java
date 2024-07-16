@@ -6,6 +6,8 @@ import java.security.Principal;
 import java.util.List;
 
 public interface CenterService {
-    CenterResponse getCenterByCenterId(Integer centerId);
+    CenterResponse getCenterByCenterId(Principal principal,Integer centerId);
     List<CenterResponse> findMyCenter(Principal principal);
+    List<CenterResponse> findAllCenter(Principal principal,Integer page);
+    List<CenterResponse> findAllCenterByMarketID(Principal principal,Integer page);
 }

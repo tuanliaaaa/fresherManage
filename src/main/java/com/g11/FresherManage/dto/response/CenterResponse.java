@@ -7,5 +7,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class CenterResponse {
-    private int code;
+    private int workingId;
+    private String workingName;
+    private String workingType;
+    private String workingStatus;
 }
