@@ -29,4 +29,13 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     @Query(value = "SELECT * FROM Account WHERE potition = 'FRESHER' LIMIT :limit OFFSET :offset", nativeQuery = true)
     List<Account> findFreshersForAnotherAdmin(@Param("offset") int offset, @Param("limit") int limit);
 
+    @Query(value = "SELECT ac.* FROM Account ac JOIN History_Working hw ON ac.id_User = hw.account_id WHERE ac.potition = 'FRESHER' AND hw.working_id = :workingId LIMIT :limit OFFSET :offset", nativeQuery = true)
+    List<Account> findFresherByWorkingId(@Param("workingId") Integer workingId, @Param("limit") Integer limit, @Param("offset") Integer offset);
+
+    @Query(value = "SELECT fresher.* " +
+            "FROM Account fresher " +
+            "WHERE fresher.position = 'FRESHER' " +
+            "AND fresher.currentWorking IN :workingIds LIMIT :limit OFFSET :offset",
+            nativeQuery = true)
+    List<Account> findFreshersByWorkingIds(@Param("workingIds") List<String> workingIds, @Param("limit") Integer limit, @Param("offset") Integer offset);
 }

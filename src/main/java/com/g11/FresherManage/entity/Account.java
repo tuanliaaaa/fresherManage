@@ -19,7 +19,6 @@ public class Account {
     private String phone;
     private String potition;
     private String is_active;
-    @JoinColumn(name = "curentWorking_id")
-    @OneToOne(cascade = CascadeType.ALL)
-    private  Working curentWorking;
+
+    private  String curentWorking;
 }

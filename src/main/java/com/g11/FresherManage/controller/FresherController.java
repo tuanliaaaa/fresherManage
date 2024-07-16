@@ -1,8 +1,10 @@
 package com.g11.FresherManage.controller;
 
 import com.g11.FresherManage.dto.ResponseGeneral;
+import com.g11.FresherManage.dto.request.fresher.FresherRequest;
 import com.g11.FresherManage.dto.response.fresher.FresherResponse;
 import com.g11.FresherManage.service.FresherService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -42,45 +44,26 @@ public class FresherController {
                 HttpStatus.OK);
     }
 
-    //------------------ Get List Fresher By Center ID -------------------------
+    //------------------ Get List Fresher By Working ID -------------------------
     @PreAuthorize("hasAnyRole('ADMIN','MENTOR','MARKETDIRECTOR','CENTERDIRECTOR')")
-    @GetMapping("/center/{centerID}")
-    public ResponseEntity<?> findFresherByCenterId(Principal principal,@PathVariable Integer centerID)
+    @GetMapping("/working/{workingId}")
+    public ResponseEntity<?> findFresherByWorkingId(Principal principal,@PathVariable Integer workingId,@RequestParam(defaultValue = "0") Integer page)
     {
         return new ResponseEntity<>(
                 ResponseGeneral.of(200,"success",
-                        fresherService.findFresherByCenterId(principal,centerID)),
-                HttpStatus.OK);
-    }
-
-    //------------------ Get List Fresher By Market ID -------------------------
-    @PreAuthorize("hasAnyRole('ADMIN','MARKETDIRECTOR')")
-    @GetMapping("/market/{marketID}")
-    public ResponseEntity<?> findFresherByMarketId(Principal principal,@PathVariable Integer marketID)
-    {
-        return new ResponseEntity<>(
-                ResponseGeneral.of(200,"success",
-                        fresherService.findFresherByCenterId(principal,marketID)),
+                        fresherService.findFresherByWorkingId(principal,workingId, page)),
                 HttpStatus.OK);
     }
 
 
-    //------------------- Get All Fresher by Role Another Admin--------------------
-    @PreAuthorize("hasAnyRole('MENTOR','MARKETDIRECTOR','CENTERDIRECTOR')")
-    @GetMapping
-    public ResponseEntity<List<?>> getFreshersForAnotherAdmin(Principal principal,
-        @RequestParam(defaultValue = "0") Integer page)
-    {
-        List<FresherResponse> freshers = fresherService.getFreshersForAnotherAdmin(principal,page*10,(page+1)*10);
-        return ResponseEntity.ok(freshers);
-    }
+
 
 
     //------------------- get All Fresher ----------------------------------------
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN','MENTOR','MARKETDIRECTOR','CENTERDIRECTOR')")
     @GetMapping("/admin/freshers")
-    public ResponseEntity<?> findAllFreshers(@RequestParam(defaultValue = "0") Integer page)  {
-        return new ResponseEntity<>(ResponseGeneral.of(200,"success",fresherService.findAllFreshers(page*10, (page+1)*10)), HttpStatus.OK);
+    public ResponseEntity<?> findAllFreshers(Principal principal,@RequestParam(defaultValue = "0") Integer page)  {
+        return new ResponseEntity<>(ResponseGeneral.of(200,"success",fresherService.findAllFreshers(principal,page)), HttpStatus.OK);
     }
 
     //------------------- Delete Fresher By Fresher ID----------------------------
@@ -90,6 +73,16 @@ public class FresherController {
         fresherService.deleteFrdesherByFresherId(fresherId) ;
         return new ResponseEntity<>(
                 ResponseGeneral.ofSuccess("Delete Fresher Success"),HttpStatus.NO_CONTENT);
+    }
+
+
+    //------------------- Create Fresher-----------------------------------------
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("")
+    public ResponseEntity<?> createFresher(@Valid @RequestBody FresherRequest fresherRequest)  {
+        return new ResponseEntity<>(
+                ResponseGeneral.ofCreated("success",
+                        fresherService.createFresher(fresherRequest)),HttpStatus.CREATED);
     }
 
 

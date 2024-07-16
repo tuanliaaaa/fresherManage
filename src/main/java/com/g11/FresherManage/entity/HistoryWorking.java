@@ -15,5 +15,6 @@ public class HistoryWorking {
     @ManyToOne
     @JoinColumn(name = "account_id")
     private Account account;
+    private boolean is_status;
 
 }

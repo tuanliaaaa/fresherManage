@@ -5,9 +5,14 @@ import lombok.Data;
 
 @Data
 @Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 public class Working {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int workingId;
+    private String workingName;
+    private String workingType;
+    private String workingStatus;
+    @ManyToOne
+    @JoinColumn(name = "market_id")
+    private Working market;
 }
