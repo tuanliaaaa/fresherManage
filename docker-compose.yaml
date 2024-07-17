@@ -1,0 +1,37 @@
+version: '3.8'
+#containers => services
+services:
+  mysql-springboot-container:
+    image: mysql:8.0.28
+    container_name: mysql-springboot-container
+    ports:
+      - 3310:3306
+    volumes:
+      - mysql-springboot-data:/var/lib/mysql
+      - mysql-springboot-config-deamond:/etc/mysql/conf.d
+    networks:
+      - backend
+    environment:
+      MYSQL_USER: tuan
+      MYSQL_PASSWORD: 22122002
+      MYSQL_ROOT_PASSWORD: 22122002
+      MYSQL_DATABASE: FresherManage
+  springboot-docker-container:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: fresher-manage-app
+    container_name: springboot-docker-container
+    ports:
+      - 8085:8080
+    volumes:
+      - ./:/app
+    networks:
+      - backend
+#create network
+networks:
+  backend:
+    name: springboot-app-network
+volumes:
+  mysql-springboot-data:
+  mysql-springboot-config-deamond:
