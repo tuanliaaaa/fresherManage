@@ -9,11 +9,11 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idUser;
+    @Column(unique = true)
     private String username;
     private String password;
     private String avatar;
     private String firstName;
-
     private String lastName;
     private String email;
     private String phone;

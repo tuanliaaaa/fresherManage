@@ -1,6 +1,7 @@
 package com.g11.FresherManage.service;
 
-import com.g11.FresherManage.dto.request.LoginRequest;
+import com.g11.FresherManage.dto.request.auth.LoginRequest;
+import com.g11.FresherManage.dto.request.auth.RefreshTokenRequest;
 import com.g11.FresherManage.dto.response.InforAccountLoginResponse;
 import com.g11.FresherManage.dto.response.LoginResponse;
 import com.g11.FresherManage.entity.Account;
@@ -13,4 +14,5 @@ public interface AccountService {
     InforAccountLoginResponse findInforAccountLogin(Principal principal);
     Account findAccountByUsername(String username);
     List<Account> findAllAccounts();
+    LoginResponse refreshToken(RefreshTokenRequest refreshTokenRequest);
 }
