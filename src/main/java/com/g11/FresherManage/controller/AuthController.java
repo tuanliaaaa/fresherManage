@@ -6,6 +6,11 @@ import com.g11.FresherManage.dto.request.auth.RefreshTokenRequest;
 import com.g11.FresherManage.dto.response.LoginResponse;
 import com.g11.FresherManage.entity.RefreshToken;
 import com.g11.FresherManage.service.AccountService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +31,17 @@ public class AuthController {
     private final AccountService accountService;
 
 
+    @Operation(
+            summary = "Login",
+            description = "This endpoint creates a new token with the authen user details."
+//            tags = {"User Operations"}
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "User logined successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data")
+    })
     @PostMapping("/login")
-    public ResponseEntity<ResponseGeneral<LoginResponse>> login(
+    public ResponseEntity<?> login(
             @Valid  @RequestBody LoginRequest loginRequest)
     {
         log.info("(login) request:{}", loginRequest);
