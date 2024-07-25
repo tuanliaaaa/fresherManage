@@ -54,7 +54,7 @@ public class PointServiceImpl implements PointService {
                         () -> new UsernameNotFoundException()
                 );
         Account fresher = accountRepository.getByFresherId(fresherId).orElseThrow(FresherNotFoundException::new);
-        switch (userLogining.getPotition()) {
+        switch (userLogining.getPosition()) {
             case "ADMIN":
                 break;
             default:

@@ -35,7 +35,7 @@ public class CenterServiceImpl implements CenterService {
                         () -> new UsernameNotFoundException()
                 );
         List <Working> workingList = new ArrayList<>();
-        switch (userLogining.getPotition()) {
+        switch (userLogining.getPosition()) {
             case "MARKETDIRECTOR":
                 for (String workingId:userLogining.getCurentWorking().split(","))
                 workingList.addAll(workingRepository.findByMarket_WorkingId(Integer.parseInt(workingId)));

@@ -2,7 +2,8 @@ package com.g11.FresherManage.controller;
 
 import com.g11.FresherManage.dto.ResponseGeneral;
 import com.g11.FresherManage.dto.request.fresher.FresherRequest;
-import com.g11.FresherManage.dto.response.fresher.FresherResponse;
+import com.g11.FresherManage.dto.request.fresher.FresherUpdateRequest;
+import com.g11.FresherManage.entity.Account;
 import com.g11.FresherManage.service.FresherService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +14,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/freshers")
@@ -85,5 +85,31 @@ public class FresherController {
                         fresherService.createFresher(fresherRequest)),HttpStatus.CREATED);
     }
 
+    //------------------- Update Fresher-----------------------------------------
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/{fresherId}")
+    public ResponseEntity<?> updateFresher(
+            @PathVariable Integer fresherId,
+            @RequestBody FresherUpdateRequest fresherUpdateRequest)
+    {
+        log.info("Fresher {} update request: {}", fresherId ,fresherUpdateRequest);
+        return new ResponseEntity<>(
+                ResponseGeneral.ofCreated("success",
+                        fresherService.updateFresher(fresherId,fresherUpdateRequest)),HttpStatus.OK);
+    }
 
+
+    //------------------ Search Fresher ------------------------------------------
+    @GetMapping("/search")
+    public ResponseEntity<?> searchFreshers(
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String phone,
+            @RequestParam(required = false) String email
+
+    ) {
+        return new ResponseEntity<>(
+                ResponseGeneral.ofCreated("success",
+                        fresherService.searchFreshers(firstName,lastName,phone,email)),HttpStatus.OK);
+    }
 }

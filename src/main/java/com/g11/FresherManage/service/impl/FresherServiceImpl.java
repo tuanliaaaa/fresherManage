@@ -3,6 +3,7 @@ package com.g11.FresherManage.service.impl;
 
 
 import com.g11.FresherManage.dto.request.fresher.FresherRequest;
+import com.g11.FresherManage.dto.request.fresher.FresherUpdateRequest;
 import com.g11.FresherManage.dto.response.fresher.FresherResponse;
 import com.g11.FresherManage.entity.Account;
 import com.g11.FresherManage.entity.AccountRole;
@@ -17,6 +18,7 @@ import com.g11.FresherManage.repository.HistoryWorkingRepository;
 import com.g11.FresherManage.repository.RoleRepository;
 import com.g11.FresherManage.service.FresherService;
 import com.g11.FresherManage.utils.MapperUtils;
+import com.g11.FresherManage.utils.UpdateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
@@ -46,7 +48,7 @@ public class FresherServiceImpl implements FresherService {
                         () -> new UsernameNotFoundException()
                 );
         List<Account> fresherList = new ArrayList<>();
-        switch (userLogining.getPotition()) {
+        switch (userLogining.getPosition()) {
             case "ADMIN":
                 break;
             default:
@@ -65,7 +67,7 @@ public class FresherServiceImpl implements FresherService {
                         () -> new UsernameNotFoundException()
                 );
         Account fresher = accountRepository.getByFresherId(fresherId).orElseThrow(FresherNotFoundException::new);
-        switch (userLogining.getPotition()) {
+        switch (userLogining.getPosition()) {
             case "ADMIN":
                 break;
             default:
@@ -109,7 +111,7 @@ public class FresherServiceImpl implements FresherService {
             orElseThrow(
                     () -> new UsernameNotFoundException()
             );
-        switch (userLogining.getPotition()) {
+        switch (userLogining.getPosition()) {
             case "ADMIN":
                 break;
             default:
@@ -125,7 +127,7 @@ public class FresherServiceImpl implements FresherService {
     @Override
     public FresherResponse createFresher(FresherRequest fresherRequest){
         Account fresher = new Account();
-        fresher.setPotition("FRESHER");
+        fresher.setPosition("FRESHER");
         fresher.setEmail(fresherRequest.getEmail());
         fresher.setAvatar(fresherRequest.getAvatar());
         fresher.setPhone(fresherRequest.getPhone());
@@ -141,4 +143,21 @@ public class FresherServiceImpl implements FresherService {
         accountRoleRepository.save(accountRole);
         return MapperUtils.toDTO(fresher, FresherResponse.class);
     }
+
+    @Override
+    public FresherResponse updateFresher(Integer fresherId, FresherUpdateRequest fresherUpdateRequest)
+    {
+        Account fresher = accountRepository.getByFresherId(fresherId)
+                .orElseThrow(() -> new FresherNotFoundException());
+
+        UpdateUtils.updateEntityFromDTO(fresher, fresherUpdateRequest);
+        fresher=accountRepository.save(fresher);
+        return MapperUtils.toDTO(fresher, FresherResponse.class);
+    }
+
+    @Override
+    public List<FresherResponse> searchFreshers(String firstName,String lastName,String phone,String email) {
+        return MapperUtils.toDTOs(accountRepository.searchFreshers(firstName,lastName,phone,email),FresherResponse.class);
+    }
+
 }

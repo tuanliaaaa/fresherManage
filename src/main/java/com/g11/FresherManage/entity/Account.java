@@ -17,7 +17,7 @@ public class Account {
     private String lastName;
     private String email;
     private String phone;
-    private String potition;
+    private String position;
     private String is_active;
 
     private  String curentWorking;
