@@ -33,27 +33,74 @@ public class AuthController {
 
     @Operation(
             summary = "Login",
-            description = "This endpoint creates a new token with the authen user details."
-//            tags = {"User Operations"}
+            description = "This is the login API using username and password. After logging in, you will receive an access_token and a refresh_token, which are used for authentication and authorization."
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "User logined successfully"),
-            @ApiResponse(responseCode = "400", description = "Invalid input data")
+            @ApiResponse(responseCode = "201", description = "User logged in successfully",
+                    content = @Content(mediaType = "application/json",
+                        examples = @ExampleObject(value = "{\n" +
+                            "    \"status\": 201,\n" +
+                            "    \"message\": \"success\",\n" +
+                            "    \"data\": {\n" +
+                            "        \"accessToken\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzIxOTY0NDkzLCJleHAiOjE3MjE5NjgwOTN9.xkLGCxyeiekYVjsCEPxwS8l7xXw-hehsdl96O9-wytk\",\n" +
+                            "        \"refreshToken\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzIxOTY0NDkzLCJleHAiOjE3MjE5ODI0OTN9.VFObbC-iihMlt2V4znvhoJ9j5wsfkP3Qa8O-0xecZ-Q\"\n" +
+                            "    },\n" +
+                            "    \"timestamp\": \"2024-07-26\"\n" +
+                            "}"))),
+            @ApiResponse(responseCode = "400", description = "Invalid input data",
+                    content = @Content(mediaType = "application/json",
+                        examples = @ExampleObject(value = "{\n" +
+                                "    \"status\": 400,\n" +
+                                "    \"message\": \"validate error\",\n" +
+                                "    \"error\": {\n" +
+                                "        \"password\": \"password is mandatory\"\n" +
+                                "    },\n" +
+                                "    \"code\": \"com.g11.FresherManage.exception.validate\",\n" +
+                                "    \"timestamp\": \"2024-07-26\"\n" +
+                                "}"))),
+            @ApiResponse(responseCode = "404", description = "Username or password incorrect",
+                    content = @Content(mediaType = "application/json",
+                        examples = @ExampleObject(value = "{\n" +
+                                "  \"status\": 404,\n" +
+                                "  \"message\": \"Not Found\",\n" +
+                                "  \"error\": \"User not found\",\n" +
+                                "  \"code\": \"com.g11.FresherManage.exception.account.UsernameNotFoundException\",\n" +
+                                "  \"timestamp\": \"2024-07-26\"\n" +
+                                "}")))
     })
     @PostMapping("/login")
     public ResponseEntity<?> login(
             @Valid  @RequestBody LoginRequest loginRequest)
     {
-        log.info("(login) request:{}", loginRequest);
-//        System.out.println(new BCryptPasswordEncoder().encode("tuan"));
+        log.info("(login) by username:{} and password:{}", loginRequest.getUsername(),loginRequest.getPassword());
         ResponseGeneral<LoginResponse> responseGeneral=ResponseGeneral.ofCreated(
     "success",
             accountService.login(loginRequest));
         return new ResponseEntity<>(responseGeneral, HttpStatus.CREATED);
     }
+
+
+    @Operation(
+            summary = "Refresh Token",
+            description = "This is an API to obtain a new access_token using a refresh_token when the current access_token expires."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Successfully obtained a new token",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "    \"status\": 201,\n" +
+                                    "    \"message\": \"success\",\n" +
+                                    "    \"data\": {\n" +
+                                    "        \"accessToken\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzIxOTY0NDkzLCJleHAiOjE3MjE5NjgwOTN9.xkLGCxyeiekYVjsCEPxwS8l7xXw-hehsdl96O9-wytk\",\n" +
+                                    "        \"refreshToken\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzIxOTY0NDkzLCJleHAiOjE3MjE5ODI0OTN9.VFObbC-iihMlt2V4znvhoJ9j5wsfkP3Qa8O-0xecZ-Q\"\n" +
+                                    "    },\n" +
+                                    "    \"timestamp\": \"2024-07-26\"\n" +
+                                    "}")))
+
+    })
     @PostMapping("/refreshToken")
     public ResponseEntity<ResponseGeneral<LoginResponse>> refreshToken(
-            @Valid  @RequestBody RefreshTokenRequest refreshTokenRequest)
+            @Valid @RequestBody RefreshTokenRequest refreshTokenRequest)
     {
         log.info("(refreshToken) request:{}", refreshTokenRequest);
         ResponseGeneral<LoginResponse> responseGeneral=ResponseGeneral.ofCreated(

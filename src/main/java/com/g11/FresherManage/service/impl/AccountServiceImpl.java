@@ -53,6 +53,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public LoginResponse refreshToken(RefreshTokenRequest refreshTokenRequest)
     {
+        log.info("(refreshTokenRequest) refreshTokenRequest with token: {})",refreshTokenRequest.getRefreshToken());
         LoginResponse loginResponse =new LoginResponse();
         loginResponse.setRefreshToken(refreshTokenRequest.getRefreshToken());
         try{
@@ -66,6 +67,7 @@ public class AccountServiceImpl implements AccountService {
         if(account.getIs_active().equals("lock"))throw new AccountIsLockException();
         String token = jwtUtilities.generateToken(account.getUsername());
         loginResponse.setAccessToken(token);
+        log.info("(refreshTokenRequest) refresh token success  with token: {}",token);
         return loginResponse;
     }
 
@@ -88,12 +90,31 @@ public class AccountServiceImpl implements AccountService {
         return response;
     }
     @Override
-    public InforAccountLoginResponse findInforAccountLogin(Principal principal) {
-        Account account= accountRepository.findByUsername(principal.getName()).orElseThrow(UsernameNotFoundException::new);
+    public InforAccountLoginResponse findInforByUsername(String username)
+    {
+        log.info("(findInforByUsername) username: {}",username);
+
+        List<Object[]> results= accountRepository.findInforByUsernameWithRoles(username);
+        if(results.isEmpty()) throw new UsernameNotFoundException();
+
+
         InforAccountLoginResponse inforAccountLoginResponse = new InforAccountLoginResponse();
-        inforAccountLoginResponse.setAvatar(account.getAvatar());
-        inforAccountLoginResponse.setUsername(principal.getName());
-        inforAccountLoginResponse.setIs_active(account.getIs_active());
+        inforAccountLoginResponse.setIduser((Integer) results.get(0)[1]);
+        // Giả sử username và email là giống nhau cho tất cả các role
+        inforAccountLoginResponse.setUsername((String) results.get(0)[1]);
+//        accountDTO.setEmail((String) results.get(0)[2]);
+//
+//        Set<AccountRoleDTO> roles = results.stream()
+//                .map(result -> {
+//                    AccountRoleDTO accountRoleDTO = new AccountRoleDTO();
+//                    accountRoleDTO.setRoleName((String) result[3]);
+//                    accountRoleDTO.setAhihi((String) result[4]);
+//                    return accountRoleDTO;
+//                })
+//                .collect(Collectors.toSet());
+//
+//        accountDTO.setRoles(roles);
+//        return accountDTO;
         return inforAccountLoginResponse;
     }
 }

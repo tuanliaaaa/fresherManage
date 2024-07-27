@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface AccountService {
     LoginResponse login(LoginRequest loginRequest) ;
-    InforAccountLoginResponse findInforAccountLogin(Principal principal);
+    InforAccountLoginResponse findInforByUsername(String username);
     Account findAccountByUsername(String username);
     List<Account> findAllAccounts();
     LoginResponse refreshToken(RefreshTokenRequest refreshTokenRequest);

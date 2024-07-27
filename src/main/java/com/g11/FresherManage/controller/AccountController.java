@@ -23,8 +23,12 @@ public class AccountController {
     private final AccountService accountService;
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/infor")
-    public ResponseEntity<?> findInforAccountLogin(Principal principal){
-        ResponseGeneral<?> responseGeneral= ResponseGeneral.of(200,"success",accountService.findInforAccountLogin(principal));
+    public ResponseEntity<?> findInforAccountLogin(Principal principal)
+    {
+        log.info("(infor Account Login) principal: {}", principal);
+        String username = principal.getName();
+        ResponseGeneral<?> responseGeneral= ResponseGeneral.of(200,
+                "success",accountService.findInforByUsername(username));
         return new ResponseEntity<>(responseGeneral, HttpStatus.OK);
     }
 }
