@@ -2,7 +2,7 @@ package com.g11.FresherManage.service.impl;
 
 import com.g11.FresherManage.dto.request.auth.LoginRequest;
 import com.g11.FresherManage.dto.request.auth.RefreshTokenRequest;
-import com.g11.FresherManage.dto.response.InforAccountLoginResponse;
+import com.g11.FresherManage.dto.response.account.InforAccountLoginResponse;
 import com.g11.FresherManage.dto.response.LoginResponse;
 import com.g11.FresherManage.entity.Account;
 import com.g11.FresherManage.entity.RefreshToken;
@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;
-import java.security.Principal;
+
 import java.util.*;
 
 @Service
@@ -56,11 +56,8 @@ public class AccountServiceImpl implements AccountService {
         log.info("(refreshTokenRequest) refreshTokenRequest with token: {})",refreshTokenRequest.getRefreshToken());
         LoginResponse loginResponse =new LoginResponse();
         loginResponse.setRefreshToken(refreshTokenRequest.getRefreshToken());
-        try{
-            jwtUtilities.validateToken(refreshTokenRequest.getRefreshToken());
-        }catch (Exception e){
-            throw new AccountIsLockException();
-        }
+        jwtUtilities.validateToken(refreshTokenRequest.getRefreshToken());
+
         String username = jwtUtilities.extractUsername(refreshTokenRequest.getRefreshToken());
         Account account = accountRepository.findByUsername(username)
                 .orElseThrow(UsernameNotFoundException::new);
@@ -93,28 +90,10 @@ public class AccountServiceImpl implements AccountService {
     public InforAccountLoginResponse findInforByUsername(String username)
     {
         log.info("(findInforByUsername) username: {}",username);
-
         List<Object[]> results= accountRepository.findInforByUsernameWithRoles(username);
         if(results.isEmpty()) throw new UsernameNotFoundException();
-
-
-        InforAccountLoginResponse inforAccountLoginResponse = new InforAccountLoginResponse();
-        inforAccountLoginResponse.setIduser((Integer) results.get(0)[1]);
-        // Giả sử username và email là giống nhau cho tất cả các role
-        inforAccountLoginResponse.setUsername((String) results.get(0)[1]);
-//        accountDTO.setEmail((String) results.get(0)[2]);
-//
-//        Set<AccountRoleDTO> roles = results.stream()
-//                .map(result -> {
-//                    AccountRoleDTO accountRoleDTO = new AccountRoleDTO();
-//                    accountRoleDTO.setRoleName((String) result[3]);
-//                    accountRoleDTO.setAhihi((String) result[4]);
-//                    return accountRoleDTO;
-//                })
-//                .collect(Collectors.toSet());
-//
-//        accountDTO.setRoles(roles);
-//        return accountDTO;
-        return inforAccountLoginResponse;
+        InforAccountLoginResponse inforAccountLoginResponse = new InforAccountLoginResponse(results);
+        log.info("(findInforByUsername) infor :{}",inforAccountLoginResponse);
+        return inforAccountLoginResponse ;
     }
 }

@@ -52,10 +52,10 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
                                  @Param("lastName") String lastName,
                                  @Param("phone") String phone,
                                  @Param("email") String email);
-    @Query(value = "SELECT a.id AS accountId, a.username, a.email, r.role_name, ar.ahihi " +
+    @Query(value = "SELECT a.id_User,a.username,a.avatar,a.first_Name,a.last_Name,a.email,a.phone,a.position,a.is_active,a.curent_Working,r.id_Role, r.role_Name " +
             "FROM account a " +
-            "JOIN account_role ar ON a.id = ar.account_id " +
-            "JOIN role r ON ar.role_id = r.id " +
+            "JOIN account_role ar ON a.id_User = ar.user_id " +
+            "JOIN role r ON ar.role_id = r.id_Role " +
             "WHERE a.username = :username ", nativeQuery = true)
     List<Object[]> findInforByUsernameWithRoles(@Param("username") String username);
 }

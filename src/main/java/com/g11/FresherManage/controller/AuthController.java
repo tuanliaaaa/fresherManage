@@ -7,10 +7,13 @@ import com.g11.FresherManage.dto.response.LoginResponse;
 import com.g11.FresherManage.entity.RefreshToken;
 import com.g11.FresherManage.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.security.SecuritySchemes;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/auths")
 @Slf4j
 @RequiredArgsConstructor
+
 public class AuthController {
 
     private final AccountService accountService;
@@ -95,8 +99,25 @@ public class AuthController {
                                     "        \"refreshToken\": \"eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzIxOTY0NDkzLCJleHAiOjE3MjE5ODI0OTN9.VFObbC-iihMlt2V4znvhoJ9j5wsfkP3Qa8O-0xecZ-Q\"\n" +
                                     "    },\n" +
                                     "    \"timestamp\": \"2024-07-26\"\n" +
-                                    "}")))
-
+                                    "}"))),
+            @ApiResponse(responseCode = "400", description = "validate error",
+                    content = @Content(mediaType = "application/json",
+                            examples = @ExampleObject(value = "{\n" +
+                                    "  \"status\": 400,\n" +
+                                    "  \"message\": \"validate error\",\n" +
+                                    "  \"error\": {\n" +
+                                    "    \"refreshToken\": \"refreshToken is mandatory\"\n" +
+                                    "  },\n" +
+                                    "  \"code\": \"com.cmo.validate\",\n" +
+                                    "  \"timestamp\": \"2024-07-27\"\n" +
+                                    "}"))),
+            @ApiResponse(responseCode = "401", description = "Invalid refresh Token", content = @Content(mediaType = "application/json", examples = @ExampleObject(value = "{\n" +
+                    "  \"status\": 401,\n" +
+                    "  \"message\": \"UNAUTHORIZED\",\n" +
+                    "  \"error\": \"Invalid JWT signature.\",\n" +
+                    "  \"code\": \"com.11.FresherManage.exception.base.UnauthorizedException\",\n" +
+                    "  \"timestamp\": \"2024-07-27\"\n" +
+                    "}")))
     })
     @PostMapping("/refreshToken")
     public ResponseEntity<ResponseGeneral<LoginResponse>> refreshToken(

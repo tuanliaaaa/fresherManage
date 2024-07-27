@@ -1,6 +1,7 @@
 package com.g11.FresherManage.security;
 
 import com.g11.FresherManage.exception.account.UsernameNotFoundException;
+import com.g11.FresherManage.exception.token.InvalidTokenException;
 import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -81,20 +82,23 @@ public class JwtUtilities{
         } catch (SignatureException e) {
             log.info("Invalid JWT signature.");
             log.trace("Invalid JWT signature trace: {}", e);
+            throw new InvalidTokenException("Invalid JWT signature.");
         } catch (MalformedJwtException e) {
             log.info("Invalid JWT token.");
             log.trace("Invalid JWT token trace: {}", e);
+            throw new InvalidTokenException("Invalid JWT token.");
         } catch (ExpiredJwtException e) {
             log.info("Expired JWT token.");
             log.trace("Expired JWT token trace: {}", e);
+            throw new InvalidTokenException("Expired JWT token.");
         } catch (UnsupportedJwtException e) {
             log.info("Unsupported JWT token.");
             log.trace("Unsupported JWT token trace: {}", e);
+            throw new InvalidTokenException("Unsupported JWT token.");
         } catch (IllegalArgumentException e) {
             log.info("JWT token compact of handler are invalid.");
             log.trace("JWT token compact of handler are invalid trace: {}", e);
+            throw new InvalidTokenException("JWT token compact of handler are invalid.");
         }
-        return false;
     }
-
 }

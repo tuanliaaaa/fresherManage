@@ -3,6 +3,7 @@ package com.g11.FresherManage.exception;
 import com.g11.FresherManage.dto.ResponseError;
 import com.g11.FresherManage.exception.base.AccessDeniedException;
 import com.g11.FresherManage.exception.base.NotFoundException;
+import com.g11.FresherManage.exception.token.InvalidTokenException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.g11.FresherManage.exception.account.UsernameNotFoundException;
@@ -50,6 +51,11 @@ public class AdviceController {
     }
 
 
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<?> handleInvalidTokenException(InvalidTokenException ex) {
+        log.error(ex.getMessage());
+        return new ResponseEntity<>(ResponseError.of(401,"UNAUTHORIZED",ex.getMessage(), ex.getCode()),HttpStatus.UNAUTHORIZED);
+    }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ResponseError<Map<String ,String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
