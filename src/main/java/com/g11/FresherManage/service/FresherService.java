@@ -8,10 +8,10 @@ import java.security.Principal;
 import java.util.List;
 
 public interface FresherService {
-    List<FresherResponse> findAllFreshers(Principal principal,Integer page) ;
-    FresherResponse getFresherByFresherId(Principal principal,Integer fresherId);
+    List<FresherResponse> findAllFreshers(Integer page) ;
+    FresherResponse getFresherByFresherId(Integer fresherId);
     Void deleteFrdesherByFresherId(Integer fresherId);
-    FresherResponse getMyFresherInfo(Principal principal);
+    FresherResponse getFresherByUsername(String username);
     List<FresherResponse> getFreshersForAnotherAdmin(Principal principal,Integer offset,Integer limit);
     List<FresherResponse> findFresherByWorkingId(Principal principal,Integer workingId,Integer page);
     FresherResponse createFresher(FresherRequest fresherRequest);

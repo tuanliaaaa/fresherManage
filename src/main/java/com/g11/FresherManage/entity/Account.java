@@ -2,9 +2,12 @@ package com.g11.FresherManage.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Data
 @Entity
+@NoArgsConstructor
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,4 +24,18 @@ public class Account {
     private String is_active;
 
     private  String curentWorking;
+    public  Account(  String password, String avatar, String firstName,
+                    String lastName, String email, String phone, String position
+                    ) {
+        this.username = email;
+        this.password = new BCryptPasswordEncoder().encode(password);
+        this.avatar = avatar;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phone = phone;
+        this.position = position;
+        this.is_active = "active";
+        this.curentWorking = "";
+    }
 }

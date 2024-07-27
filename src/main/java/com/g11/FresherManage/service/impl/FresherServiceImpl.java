@@ -10,12 +10,15 @@ import com.g11.FresherManage.entity.AccountRole;
 import com.g11.FresherManage.entity.HistoryWorking;
 import com.g11.FresherManage.entity.Role;
 import com.g11.FresherManage.exception.account.UsernameNotFoundException;
+import com.g11.FresherManage.exception.base.UnauthorizedException;
 import com.g11.FresherManage.exception.fresher.FresherNotFoundException;
+import com.g11.FresherManage.exception.role.RoleNotFoundException;
 import com.g11.FresherManage.exception.workinghistory.EmployeeNotWorkinWorkingException;
 import com.g11.FresherManage.repository.AccountRepository;
 import com.g11.FresherManage.repository.AccountRoleRepository;
 import com.g11.FresherManage.repository.HistoryWorkingRepository;
 import com.g11.FresherManage.repository.RoleRepository;
+import com.g11.FresherManage.service.AccountRoleService;
 import com.g11.FresherManage.service.FresherService;
 import com.g11.FresherManage.utils.MapperUtils;
 import com.g11.FresherManage.utils.UpdateUtils;
@@ -39,45 +42,53 @@ public class FresherServiceImpl implements FresherService {
     private final AccountRoleRepository accountRoleRepository;
     private final RoleRepository roleRepository;
     private final HistoryWorkingRepository historyWorkingRepository;
+    private final AccountRoleService accountRoleService;
     @Override
     @Cacheable(value = "freshersCache")
-    public List<FresherResponse> findAllFreshers(Principal principal,Integer page)
+    public List<FresherResponse> findAllFreshers(Integer page)
     {
-        Account userLogining = accountRepository.findByUsername(principal.getName()).
-                orElseThrow(
-                        () -> new UsernameNotFoundException()
-                );
+        String username = accountRoleService.getUsername();
+        if(username==null) throw new UnauthorizedException();
+        List<String> roleList=accountRoleService.findRolesByUserLoging();
         List<Account> fresherList = new ArrayList<>();
-        switch (userLogining.getPosition()) {
-            case "ADMIN":
-                break;
-            default:
-                List<String>workingIdsLoging = List.of(userLogining.getCurentWorking().split(","));
-                if(workingIdsLoging.size()==0) new EmployeeNotWorkinWorkingException();
-                fresherList=accountRepository.findFreshersByWorkingIds(workingIdsLoging,page*10,(page+1)*10);
-        }
-        return MapperUtils.toDTOs(fresherList,FresherResponse.class);
+        if(!roleList.contains("ROLE_ADMIN"))
+        {
+            Account userLogining = accountRepository.findByUsername(username).
+                    orElseThrow(
+                            () -> new UsernameNotFoundException()
+                    );
+            List<String>workingIdsLoging = List.of(userLogining.getCurentWorking().split(","));
+            if(workingIdsLoging.size()==0) new EmployeeNotWorkinWorkingException();
+            fresherList=accountRepository.findFreshersByWorkingIds(workingIdsLoging,page*10,(page+1)*10);
+        }else fresherList=accountRepository.findFreshersWithPagination(page*10,(page+1)*10);
+        List<FresherResponse> fresherResponseList = MapperUtils.toDTOs(fresherList,FresherResponse.class);
+        log.info("findAllFreshers success: {} ",fresherResponseList);
+        return fresherResponseList;
     }
     @Override
 //    @Cacheable(value = "fresherCache",key = "#fresherId")
-    public FresherResponse getFresherByFresherId(Principal principal,Integer fresherId)
+    public FresherResponse getFresherByFresherId(Integer fresherId)
     {
-        Account userLogining = accountRepository.findByUsername(principal.getName()).
-                orElseThrow(
-                        () -> new UsernameNotFoundException()
-                );
+        String username = accountRoleService.getUsername();
+        if(username==null) throw new UnauthorizedException();
+        List<String> roleList=accountRoleService.findRolesByUserLoging();
         Account fresher = accountRepository.getByFresherId(fresherId).orElseThrow(FresherNotFoundException::new);
-        switch (userLogining.getPosition()) {
-            case "ADMIN":
-                break;
-            default:
-                String curentWorkingLogining = userLogining.getCurentWorking()==null?"":userLogining.getCurentWorking();
-                String curentWorkingFresher = fresher.getCurentWorking()==null?"":fresher.getCurentWorking();
+        if(!roleList.contains("ROLE_ADMIN"))
+        {
+            Account userLogining = accountRepository.findByUsername(username).
+                    orElseThrow(
+                            () -> new UsernameNotFoundException()
+                    );
 
-                if((curentWorkingFresher.equals("")&&curentWorkingLogining.equals(""))||!curentWorkingLogining.contains(curentWorkingFresher))
-                    throw new EmployeeNotWorkinWorkingException();
+            String curentWorkingLogining = userLogining.getCurentWorking()==null?"":userLogining.getCurentWorking();
+            String curentWorkingFresher = fresher.getCurentWorking()==null?"":fresher.getCurentWorking();
+
+            if((curentWorkingFresher.equals("")&&curentWorkingLogining.equals(""))||!curentWorkingLogining.contains(curentWorkingFresher))
+                throw new EmployeeNotWorkinWorkingException();
         }
-        return MapperUtils.toDTO(fresher, FresherResponse.class);
+        FresherResponse fresherResponse = MapperUtils.toDTO(fresher, FresherResponse.class);
+        log.info("fresherResponse: {}", fresherResponse);
+        return fresherResponse;
     }
 
 
@@ -88,14 +99,17 @@ public class FresherServiceImpl implements FresherService {
         Account fresher=accountRepository.getByFresherId(fresherId).orElseThrow(FresherNotFoundException::new);
         fresher.setIs_active("lock");
         accountRepository.save(fresher);
+        log.info("delete Frdesher success: {}", fresherId);
         return null;
     }
     @Override
-    public FresherResponse getMyFresherInfo(Principal principal)
+    public FresherResponse getFresherByUsername(String username)
     {
         Account fresher= accountRepository.findFresherByUsername(
-                principal.getName()).orElseThrow(FresherNotFoundException::new);
-        return MapperUtils.toDTO(fresher, FresherResponse.class);
+                username).orElseThrow(FresherNotFoundException::new);
+        FresherResponse fresherResponse = MapperUtils.toDTO(fresher, FresherResponse.class);
+        log.info("fresher response:{}",fresherResponse);
+        return fresherResponse;
     }
 
     @Override
@@ -125,23 +139,27 @@ public class FresherServiceImpl implements FresherService {
     }
 
     @Override
-    public FresherResponse createFresher(FresherRequest fresherRequest){
-        Account fresher = new Account();
-        fresher.setPosition("FRESHER");
-        fresher.setEmail(fresherRequest.getEmail());
-        fresher.setAvatar(fresherRequest.getAvatar());
-        fresher.setPhone(fresherRequest.getPhone());
-        fresher.setPassword("$2a$10$pDpHbyz8RfcI6P3TVZG3dOrXvfdG9PpkGk7zzeFL5qctKKpU39T/G");
-        fresher.setUsername(fresherRequest.getEmail());
-        fresher.setFirstName(fresherRequest.getFirstName());
-        fresher.setLastName(fresherRequest.getLastName());
+    public FresherResponse createFresher(FresherRequest fresherRequest)
+    {
+        Account fresher = new Account(
+                fresherRequest.getPassword(),
+                fresherRequest.getAvatar(),
+                fresherRequest.getFirstName(),
+                fresherRequest.getLastName(),
+                fresherRequest.getEmail(),
+                fresherRequest.getPhone(),
+                "FRESHER"
+        );
         fresher=accountRepository.save(fresher);
-        Role fresherRole=roleRepository.getById(6);
+        Role fresherRole=roleRepository.findByRoleName("ROLE_FRESHER").orElseThrow(
+                ()-> new RoleNotFoundException());
         AccountRole accountRole=new AccountRole();
         accountRole.setRole(fresherRole);
         accountRole.setAccount(fresher);
         accountRoleRepository.save(accountRole);
-        return MapperUtils.toDTO(fresher, FresherResponse.class);
+        FresherResponse fresherResponse =MapperUtils.toDTO(fresher, FresherResponse.class);
+        log.info("createFresher success: {} ",fresherResponse);
+        return fresherResponse;
     }
 
     @Override
@@ -152,7 +170,9 @@ public class FresherServiceImpl implements FresherService {
 
         UpdateUtils.updateEntityFromDTO(fresher, fresherUpdateRequest);
         fresher=accountRepository.save(fresher);
-        return MapperUtils.toDTO(fresher, FresherResponse.class);
+        FresherResponse fresherResponse = MapperUtils.toDTO(fresher, FresherResponse.class);
+        log.info("fresher update success: {}", fresherResponse);
+        return  fresherResponse;
     }
 
     @Override

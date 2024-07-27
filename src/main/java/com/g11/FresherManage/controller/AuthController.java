@@ -76,6 +76,7 @@ public class AuthController {
     public ResponseEntity<?> login(
             @Valid  @RequestBody LoginRequest loginRequest)
     {
+//        System.out.println(new BCryptPasswordEncoder().encode("tuan"));
         log.info("(login) by username:{} and password:{}", loginRequest.getUsername(),loginRequest.getPassword());
         ResponseGeneral<LoginResponse> responseGeneral=ResponseGeneral.ofCreated(
     "success",

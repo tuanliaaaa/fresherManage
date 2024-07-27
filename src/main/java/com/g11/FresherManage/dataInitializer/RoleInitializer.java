@@ -17,11 +17,11 @@ public class RoleInitializer implements ApplicationListener<ContextRefreshedEven
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if (roleRepository.count() == 0) {
-            roleRepository.save(new Role(1,"USER"));
-            roleRepository.save(new Role(2,"ADMIN"));
-            roleRepository.save(new Role(3,"MENTOR"));
-            roleRepository.save(new Role(4,"CENTERDIRECTOR"));
-            roleRepository.save(new Role(5,"MARKETDIRECTOR"));
+            roleRepository.save(new Role(1,"ROLE_USER"));
+            roleRepository.save(new Role(2,"ROLE_ADMIN"));
+            roleRepository.save(new Role(3,"ROLE_MENTOR"));
+            roleRepository.save(new Role(4,"ROLE_CENTERDIRECTOR"));
+            roleRepository.save(new Role(5,"ROLE_MARKETDIRECTOR"));
         }
     }
 }
