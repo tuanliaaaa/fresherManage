@@ -17,11 +17,17 @@ public class Working {
     @ManyToOne
     @JoinColumn(name = "market_id")
     private Working market;
-    public Working(String workingName, String workingType, String workingStatus, Working market)
+    public Working(String workingName, Working market)
     {
         this.workingName = workingName;
-        this.workingType = workingType;
-        this.workingStatus = workingStatus;
+        this.workingType = "CENTER";
+        this.workingStatus = "active";
         this.market = market;
+    }
+    public Working(String workingName)
+    {
+        this.workingName = workingName;
+        this.workingType = "MARKET";
+        this.workingStatus = "active";
     }
 }

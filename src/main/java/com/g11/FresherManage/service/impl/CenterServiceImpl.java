@@ -2,8 +2,7 @@ package com.g11.FresherManage.service.impl;
 
 import com.g11.FresherManage.dto.request.center.CenterRequest;
 import com.g11.FresherManage.dto.request.center.CenterUpdateRequest;
-import com.g11.FresherManage.dto.response.CenterResponse;
-import com.g11.FresherManage.dto.response.MarketResponse;
+import com.g11.FresherManage.dto.response.center.CenterResponse;
 import com.g11.FresherManage.entity.Account;
 import com.g11.FresherManage.entity.Working;
 import com.g11.FresherManage.exception.account.UsernameNotFoundException;
@@ -20,13 +19,11 @@ import com.g11.FresherManage.utils.MapperUtils;
 import com.g11.FresherManage.utils.UpdateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -129,8 +126,6 @@ public class CenterServiceImpl implements CenterService {
         );
         Working centerNew = new Working(
                 centerRequest.getWorkingName(),
-                "CENTER",
-                "active",
                 market
         );
         workingRepository.save(centerNew);

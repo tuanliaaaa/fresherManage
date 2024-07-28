@@ -24,6 +24,7 @@ import com.g11.FresherManage.utils.MapperUtils;
 import com.g11.FresherManage.utils.UpdateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,7 @@ import javax.security.auth.login.AccountNotFoundException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +46,9 @@ public class FresherServiceImpl implements FresherService {
     private final HistoryWorkingRepository historyWorkingRepository;
     private final AccountRoleService accountRoleService;
     @Override
-    @Cacheable(value = "freshersCache")
+//    @Cacheable(value = "freshersCache")
+    @CacheEvict(value = "freshersCache")
+
     public List<FresherResponse> findAllFreshers(Integer page)
     {
         String username = accountRoleService.getUsername();
@@ -57,9 +61,13 @@ public class FresherServiceImpl implements FresherService {
                     orElseThrow(
                             () -> new UsernameNotFoundException()
                     );
-            List<String>workingIdsLoging = List.of(userLogining.getCurentWorking().split(","));
+            List<String> workingIdsLoging = List.of(userLogining.getCurentWorking().split(","))
+                    .stream()
+                    .filter(id -> id.endsWith("*"))
+                    .collect(Collectors.toList());
+
             if(workingIdsLoging.size()==0) new EmployeeNotWorkinWorkingException();
-            fresherList=accountRepository.findFreshersByWorkingIds(workingIdsLoging,page*10,(page+1)*10);
+            fresherList=accountRepository.findFreshersByWorkingIds(workingIdsLoging.get(0),page*10,(page+1)*10);
         }else fresherList=accountRepository.findFreshersWithPagination(page*10,(page+1)*10);
         List<FresherResponse> fresherResponseList = MapperUtils.toDTOs(fresherList,FresherResponse.class);
         log.info("findAllFreshers success: {} ",fresherResponseList);
@@ -82,15 +90,28 @@ public class FresherServiceImpl implements FresherService {
 
             String curentWorkingLogining = userLogining.getCurentWorking()==null?"":userLogining.getCurentWorking();
             String curentWorkingFresher = fresher.getCurentWorking()==null?"":fresher.getCurentWorking();
-
-            if((curentWorkingFresher.equals("")&&curentWorkingLogining.equals(""))||!curentWorkingLogining.contains(curentWorkingFresher))
+            if((curentWorkingFresher.equals("")&&curentWorkingLogining.equals("")))
+                throw new EmployeeNotWorkinWorkingException();
+            List<String> workingIdsLoging = List.of(curentWorkingFresher.split(","))
+                    .stream()
+                    .filter(id -> id.endsWith("*"))
+                    .collect(Collectors.toList());
+            if(!curentWorkingLogining.contains(workingIdsLoging.get(0)))
                 throw new EmployeeNotWorkinWorkingException();
         }
         FresherResponse fresherResponse = MapperUtils.toDTO(fresher, FresherResponse.class);
         log.info("fresherResponse: {}", fresherResponse);
         return fresherResponse;
     }
-
+    @Override
+    public FresherResponse getFresherByUsername(String username)
+    {
+        Account fresher= accountRepository.findFresherByUsername(
+                username).orElseThrow(FresherNotFoundException::new);
+        FresherResponse fresherResponse = MapperUtils.toDTO(fresher, FresherResponse.class);
+        log.info("fresher response:{}",fresherResponse);
+        return fresherResponse;
+    }
 
     @Override
     @CachePut(value = "fresherCache",key = "#fresherId")
@@ -102,15 +123,7 @@ public class FresherServiceImpl implements FresherService {
         log.info("delete Frdesher success: {}", fresherId);
         return null;
     }
-    @Override
-    public FresherResponse getFresherByUsername(String username)
-    {
-        Account fresher= accountRepository.findFresherByUsername(
-                username).orElseThrow(FresherNotFoundException::new);
-        FresherResponse fresherResponse = MapperUtils.toDTO(fresher, FresherResponse.class);
-        log.info("fresher response:{}",fresherResponse);
-        return fresherResponse;
-    }
+
 
     @Override
     public List<FresherResponse> getFreshersForAnotherAdmin(Principal principal,Integer offset,Integer limit){

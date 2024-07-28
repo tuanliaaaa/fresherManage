@@ -19,8 +19,8 @@ public interface WorkingRepository   extends JpaRepository<Working, Integer> {
     @Query(value = "SELECT w.* FROM Working as w WHERE w.market_id :=id", nativeQuery = true)
     List<Working> findByMarket_MarketId(Integer id);
 
-    @Query(value = "SELECT w.* FROM Working as w WHERE w.market is null LIMIT :limit OFFSET :offset", nativeQuery = true)
-    List<Working> findAllMarket( @Param("limit") Integer limit, @Param("offset") Integer offset);
+    @Query(value = "SELECT w.* FROM Working as w WHERE  w.working_Type= 'MARKET' LIMIT :limit OFFSET :offset", nativeQuery = true)
+    List<Working> findAllMarket(  @Param("offset") Integer offset,@Param("limit") Integer limit);
     @Query(value = "SELECT w.* FROM Working as w WHERE w.working_Type= 'CENTER' AND w.working_Id=:centerId", nativeQuery = true)
     Optional<Working> getCenterByCenterId(@Param("centerId") Integer centerId);
 

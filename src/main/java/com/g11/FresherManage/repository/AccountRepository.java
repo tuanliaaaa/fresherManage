@@ -39,9 +39,9 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     @Query(value = "SELECT fresher.* " +
             "FROM Account fresher " +
             "WHERE fresher.position = 'FRESHER' " +
-            "AND fresher.currentWorking IN :workingIds LIMIT :limit OFFSET :offset",
+            "AND fresher.curent_Working Like CONCAT('%', :workingId, '%') LIMIT :limit OFFSET :offset",
             nativeQuery = true)
-    List<Account> findFreshersByWorkingIds(@Param("workingIds") List<String> workingIds, @Param("limit") Integer limit, @Param("offset") Integer offset);
+    List<Account> findFreshersByWorkingIds(@Param("workingId") String workingId, @Param("offset") Integer offset,@Param("limit") Integer limit);
 
     @Query("SELECT ac FROM Account ac WHERE ac.position = 'FRESHER' AND" +
             "(:firstName IS NULL OR ac.firstName LIKE %:name%) AND " +

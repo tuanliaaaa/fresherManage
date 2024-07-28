@@ -165,10 +165,10 @@ public class FresherController {
             @Parameter(name = "page", description = "Page", in = ParameterIn.QUERY, example = "0")
     })
     @PreAuthorize("hasAnyRole('ADMIN','MENTOR','MARKETDIRECTOR','CENTERDIRECTOR')")
-    @GetMapping("/freshers")
+    @GetMapping("")
     public ResponseEntity<?> findAllFreshers(@RequestParam(defaultValue = "0") Integer page)
     {
-        log.info("findAllFreshers with page:{]",page);
+        log.info("findAllFreshers with page:{}",page);
         return new ResponseEntity<>(ResponseGeneral.of(200,"success",fresherService.findAllFreshers(page)), HttpStatus.OK);
     }
 

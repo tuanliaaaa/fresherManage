@@ -2,8 +2,7 @@ package com.g11.FresherManage.service;
 
 import com.g11.FresherManage.dto.request.center.CenterRequest;
 import com.g11.FresherManage.dto.request.center.CenterUpdateRequest;
-import com.g11.FresherManage.dto.response.CenterResponse;
-import com.g11.FresherManage.dto.response.MarketResponse;
+import com.g11.FresherManage.dto.response.center.CenterResponse;
 
 import java.security.Principal;
 import java.util.List;
