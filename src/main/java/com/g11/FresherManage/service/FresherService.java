@@ -13,7 +13,7 @@ public interface FresherService {
     Void deleteFrdesherByFresherId(Integer fresherId);
     FresherResponse getFresherByUsername(String username);
     List<FresherResponse> getFreshersForAnotherAdmin(Principal principal,Integer offset,Integer limit);
-    List<FresherResponse> findFresherByWorkingId(Principal principal,Integer workingId,Integer page);
+//    List<FresherResponse> findFresherByCenterId(Integer centerId,Integer page);
     FresherResponse createFresher(FresherRequest fresherRequest);
     FresherResponse updateFresher(Integer fresherId, FresherUpdateRequest fresherUpdateRequest);
     List<FresherResponse> searchFreshers(String firstName,String lastName,String phone,String email);

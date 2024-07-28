@@ -118,25 +118,25 @@ public class FresherServiceImpl implements FresherService {
         return MapperUtils.toDTOs(freshers, FresherResponse.class);
     }
 
-    @Override
-    public List<FresherResponse> findFresherByWorkingId(Principal principal,Integer workingId,Integer page)
-    {
-        Account userLogining = accountRepository.findByUsername(principal.getName()).
-            orElseThrow(
-                    () -> new UsernameNotFoundException()
-            );
-        switch (userLogining.getPosition()) {
-            case "ADMIN":
-                break;
-            default:
-                String curentWorkingLogining = userLogining.getCurentWorking()==null?"":userLogining.getCurentWorking();
-
-                if(!curentWorkingLogining.contains(String.valueOf(workingId)+","))
-                    throw new EmployeeNotWorkinWorkingException();
-        }
-        List<Account> freshers= accountRepository.findFresherByWorkingId(workingId,page*10,(page+1)*10);
-        return MapperUtils.toDTOs(freshers, FresherResponse.class);
-    }
+//    @Override
+//    public List<FresherResponse> findFresherByCenterId(Integer centerId,Integer page)
+//    {
+//        Account userLogining = accountRepository.findByUsername(principal.getName()).
+//            orElseThrow(
+//                    () -> new UsernameNotFoundException()
+//            );
+//        switch (userLogining.getPosition()) {
+//            case "ADMIN":
+//                break;
+//            default:
+//                String curentWorkingLogining = userLogining.getCurentWorking()==null?"":userLogining.getCurentWorking();
+//
+//                if(!curentWorkingLogining.contains(String.valueOf(workingId)+","))
+//                    throw new EmployeeNotWorkinWorkingException();
+//        }
+//        List<Account> freshers= accountRepository.findFresherByWorkingId(workingId,page*10,(page+1)*10);
+//        return MapperUtils.toDTOs(freshers, FresherResponse.class);
+//    }
 
     @Override
     public FresherResponse createFresher(FresherRequest fresherRequest)

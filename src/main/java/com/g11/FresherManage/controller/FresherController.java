@@ -115,16 +115,16 @@ public class FresherController {
                 HttpStatus.OK);
     }
 
-    //------------------ Get List Fresher By Working ID -------------------------
-    @PreAuthorize("hasAnyRole('ADMIN','MENTOR','MARKETDIRECTOR','CENTERDIRECTOR')")
-    @GetMapping("/working/{workingId}")
-    public ResponseEntity<?> findFresherByWorkingId(Principal principal,@PathVariable Integer workingId,@RequestParam(defaultValue = "0") Integer page)
-    {
-        return new ResponseEntity<>(
-                ResponseGeneral.of(200,"success",
-                        fresherService.findFresherByWorkingId(principal,workingId, page)),
-                HttpStatus.OK);
-    }
+    //------------------ Get List Fresher By Center ID -------------------------
+//    @PreAuthorize("hasAnyRole('ADMIN','MENTOR','MARKETDIRECTOR','CENTERDIRECTOR')")
+//    @GetMapping("/center/{centerId}")
+//    public ResponseEntity<?> findFresherByWorkingId(@PathVariable Integer centerId,@RequestParam(defaultValue = "0") Integer page)
+//    {
+//        return new ResponseEntity<>(
+//                ResponseGeneral.of(200,"success",
+//                        fresherService.findFresherByWorkingId(principal,workingId, page)),
+//                HttpStatus.OK);
+//    }
 
 
 
@@ -168,6 +168,7 @@ public class FresherController {
     @GetMapping("/freshers")
     public ResponseEntity<?> findAllFreshers(@RequestParam(defaultValue = "0") Integer page)
     {
+        log.info("findAllFreshers with page:{]",page);
         return new ResponseEntity<>(ResponseGeneral.of(200,"success",fresherService.findAllFreshers(page)), HttpStatus.OK);
     }
 
@@ -235,7 +236,8 @@ public class FresherController {
     })
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("")
-    public ResponseEntity<?> createFresher(@Valid @RequestBody FresherRequest fresherRequest)  {
+    public ResponseEntity<?> createFresher(@Valid @RequestBody FresherRequest fresherRequest)
+    {
         log.info("(FresherRequest) fresherRequest: {}", fresherRequest);
         return new ResponseEntity<>(
                 ResponseGeneral.ofCreated("success",

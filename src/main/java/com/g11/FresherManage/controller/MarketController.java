@@ -31,22 +31,23 @@ public class MarketController {
 
     @PreAuthorize("hasAnyRole('ADMIN','MENTOR','MARKETDIRECTOR','CENTERDIRECTOR')")
     @GetMapping("/{centerId}")
-    public ResponseEntity<?> getCenterByCenterId(Principal principal,
-                                                 @PathVariable("centerId") Integer centerId)
+    public ResponseEntity<?> getCenterByCenterId(
+         @PathVariable("centerId") Integer centerId)
     {
+        log.info("get center by id: {}", centerId);
         return new ResponseEntity<>(
                 ResponseGeneral.of(200,"success",
-                        centerService.getCenterByCenterId(principal,centerId)), HttpStatus.OK);
+                        centerService.getCenterByCenterId(centerId)), HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("")
-    public ResponseEntity<?> findAllCenter(Principal principal,
-                                           @RequestParam(required = false) Integer page)
+    public ResponseEntity<?> findAllCenter(
+       @RequestParam(required = false) Integer page)
     {
         return new ResponseEntity<>(
                 ResponseGeneral.of(200,"success",
-                        centerService.findAllCenter(principal,page)), HttpStatus.OK);
+                        centerService.findAllCenter(page)), HttpStatus.OK);
     }
     @GetMapping("/market/{marketId}")
     public ResponseEntity<?> findAllCenterByMarketID(Principal principal, @PathVariable("marketId") Integer marketId)  {
