@@ -3,6 +3,7 @@ package com.g11.FresherManage.controller;
 import com.g11.FresherManage.dto.ResponseGeneral;
 import com.g11.FresherManage.dto.request.fresher.FresherRequest;
 import com.g11.FresherManage.dto.request.fresher.FresherUpdateRequest;
+import com.g11.FresherManage.dto.response.fresher.FresherResponse;
 import com.g11.FresherManage.entity.Account;
 import com.g11.FresherManage.service.FresherService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -374,4 +375,8 @@ public class FresherController {
                 ResponseGeneral.ofCreated("success",
                         fresherService.searchFreshers(firstName,lastName,phone,email)),HttpStatus.OK);
     }
+
+
+
+
 }

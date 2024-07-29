@@ -11,7 +11,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface HistoryWorkingRepository extends JpaRepository<HistoryWorking, Integer> {
-//    @Query("SELECT hw FROM HistoryWorking hw where hw.account=:account and hw.working=:working and hw.is_status=true")
-//    List<HistoryWorking> findHistoryWorkingByAccountAndWorkingAndIs_status(@Param("account") Account account,@Param("working") Working working);
+public interface HistoryWorkingRepository extends JpaRepository<HistoryWorking, Integer>
+{
+    @Query("SELECT hw FROM HistoryWorking hw where hw.account=:account and hw.is_status=true")
+    List<HistoryWorking> findHistoryWorkingByAccountIs_status(@Param("account") Account account);
 }

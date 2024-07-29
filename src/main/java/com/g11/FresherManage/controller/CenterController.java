@@ -1,9 +1,15 @@
 package com.g11.FresherManage.controller;
 
 import com.g11.FresherManage.dto.ResponseGeneral;
+import com.g11.FresherManage.dto.request.historyWorking.FresherCenterRequest;
 import com.g11.FresherManage.dto.request.center.CenterRequest;
 import com.g11.FresherManage.dto.request.center.CenterUpdateRequest;
+import com.g11.FresherManage.dto.response.fresher.FresherResponse;
+import com.g11.FresherManage.dto.response.historyWorking.FresherCenterResponse;
+import com.g11.FresherManage.entity.Account;
+import com.g11.FresherManage.entity.HistoryWorking;
 import com.g11.FresherManage.service.CenterService;
+import com.g11.FresherManage.service.HistoryWorkingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -26,6 +32,8 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class CenterController {
     private final CenterService centerService;
+    private final HistoryWorkingService historyWorkingService;
+
     @Operation( summary = "Get the center where the logged-in user is working",
             description =  "Get the center where the logged-in user is working.If the position is Market Director, get all centers under the markets managed by that person. If the position is Mentor or Center Director, get only the center where that person is working.",
             security = @SecurityRequirement(name = "bearerAuth"))
@@ -236,9 +244,6 @@ public class CenterController {
                         centerService.updateCenterByCenterId(centerId,centerUpdateRequest)), HttpStatus.OK);
     }
 
-
-
-
     @Operation( summary = "Get List center by marketID",
             description =  "Get List center by marketID. If the role of the currently logged-in user is Admin, they can update this center.",
             security = @SecurityRequirement(name = "bearerAuth"))
@@ -263,11 +268,76 @@ public class CenterController {
     })
     @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/market/{marketId}")
-    public ResponseEntity<?> findAllCenterByMarketID( @PathVariable("marketId") Integer marketId)  {
+    public ResponseEntity<?> findAllCenterByMarketID( @PathVariable("marketId") Integer marketId)
+    {
         log.info("findAllCenterByMarketID {}", marketId);
         return new ResponseEntity<>(
                 ResponseGeneral.of(200,"success",
                 centerService.findAllCenterByMarketID(marketId))
+                , HttpStatus.OK);
+    }
+
+    @Operation( summary = "Add Fresher to Center",
+            description =  "Add Fresher to Center. This Api of Admin",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Success",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                       "status": 201,
+                                       "message": "success",
+                                       "data": {
+                                         "historyWorkingId": 4,
+                                         "fresherId": 4,
+                                         "centerID": 3
+                                       },
+                                       "timestamp": "2024-07-30"
+                                     }
+                                    """))),
+    })
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("/{centerId}/freshers")
+    public ResponseEntity<?> addFresherToCenter(@PathVariable int centerId, @RequestBody FresherCenterRequest fresherCenterRequest)
+    {
+        log.info("addFresherToCenter {}", fresherCenterRequest);
+        FresherCenterResponse fresher = historyWorkingService.addFresherToCenter(centerId, fresherCenterRequest.getFresherId());
+        return new ResponseEntity<>(
+                ResponseGeneral.of(201,"success",
+                        fresher)
+                , HttpStatus.CREATED);
+    }
+
+    @Operation( summary = "Change Fresher to new center",
+            description =  "Change Fresher to new Center. This Api of Admin",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                       "status": 200,
+                                       "message": "success",
+                                       "data": {
+                                         "historyWorkingId": 4,
+                                         "fresherId": 4,
+                                         "centerID": 3
+                                       },
+                                       "timestamp": "2024-07-30"
+                                     }
+                                    """))),
+    })
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PutMapping("fresher/{fresherId}/center/{newCenterId}")
+    public ResponseEntity<?> transferFresherToCenter(@PathVariable Integer fresherId, @PathVariable Integer newCenterId)
+    {
+        log.info("transfer fresher:{} to center:{}",fresherId,newCenterId);
+        FresherCenterResponse updatedFresher = historyWorkingService.transferFresherToCenter(fresherId, newCenterId);
+        return new ResponseEntity<>(
+                ResponseGeneral.of(200,"success",
+                        updatedFresher)
                 , HttpStatus.OK);
     }
 }
