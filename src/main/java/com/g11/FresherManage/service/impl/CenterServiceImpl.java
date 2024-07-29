@@ -135,9 +135,10 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
-    public List<CenterResponse> findAllCenterByMarketID(Principal principal,Integer marketId)
+    public List<CenterResponse> findAllCenterByMarketID(Integer marketId)
     {
         List<Working> centerList = workingRepository.findByMarket_MarketId(marketId);
+        log.info("findAllCenterByMarketID success:{}",centerList);
         return  MapperUtils.toDTOs(centerList,CenterResponse.class);
     }
 

@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface AccountConservationRepository extends JpaRepository<AccountConservation, Integer> {
-    @Query("SELECT ac.conservation FROM AccountConservation ac WHERE ac.account = :account")
-    List<Conservation> findConservationsByAccount(@Param("account") Account account);
+    @Query("SELECT ac.conservation FROM AccountConservation ac WHERE ac.account.username = :username")
+    List<Conservation> findConservationsByAccount_Username(@Param("username") String username);
 
 }

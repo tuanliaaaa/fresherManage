@@ -239,11 +239,35 @@ public class CenterController {
 
 
 
-
-//    @GetMapping("/market/{marketId}")
-//    public ResponseEntity<?> findAllCenterByMarketID(Principal principal, @PathVariable("marketId") Integer marketId)  {
-//        return new ResponseEntity<>(
-//                ResponseGeneral.of(200,"success",
-//                        , HttpStatus.OK);
-//    }
+    @Operation( summary = "Get List center by marketID",
+            description =  "Get List center by marketID. If the role of the currently logged-in user is Admin, they can update this center.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                      "status": 200,
+                                      "message": "success",
+                                      "data": 
+                                       {
+                                          "workingId": 2,
+                                          "workingName": "Mi1",
+                                          "workingType": "CENTER",
+                                          "workingStatus": "1"
+                                        },
+                                      "timestamp": "2024-07-28"
+                                    }
+                                    """))),
+    })
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/market/{marketId}")
+    public ResponseEntity<?> findAllCenterByMarketID( @PathVariable("marketId") Integer marketId)  {
+        log.info("findAllCenterByMarketID {}", marketId);
+        return new ResponseEntity<>(
+                ResponseGeneral.of(200,"success",
+                centerService.findAllCenterByMarketID(marketId))
+                , HttpStatus.OK);
+    }
 }

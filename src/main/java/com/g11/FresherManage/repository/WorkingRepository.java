@@ -12,11 +12,10 @@ import java.util.Optional;
 
 @Repository
 public interface WorkingRepository   extends JpaRepository<Working, Integer> {
-    List<Working> findByMarket_WorkingId(Integer id);
 
     @Query(value = "SELECT w.* FROM Working as w WHERE w.working_Type= 'CENTER' LIMIT :limit OFFSET :offset", nativeQuery = true)
     List<Working> findAllCenter(  @Param("offset") Integer offset,@Param("limit") Integer limit);
-    @Query(value = "SELECT w.* FROM Working as w WHERE w.market_id :=id", nativeQuery = true)
+    @Query(value = "SELECT w.* FROM Working as w WHERE w.market_id =:id", nativeQuery = true)
     List<Working> findByMarket_MarketId(Integer id);
 
     @Query(value = "SELECT w.* FROM Working as w WHERE  w.working_Type= 'MARKET' LIMIT :limit OFFSET :offset", nativeQuery = true)

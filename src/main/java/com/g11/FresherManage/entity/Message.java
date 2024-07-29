@@ -10,7 +10,7 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idMessage;
     private String message;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "account_id")
     private Account sender;
     @ManyToOne

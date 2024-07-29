@@ -115,16 +115,89 @@ public class FresherController {
                 HttpStatus.OK);
     }
 
-    //------------------ Get List Fresher By Center ID -------------------------
-//    @PreAuthorize("hasAnyRole('ADMIN','MENTOR','MARKETDIRECTOR','CENTERDIRECTOR')")
-//    @GetMapping("/center/{centerId}")
-//    public ResponseEntity<?> findFresherByWorkingId(@PathVariable Integer centerId,@RequestParam(defaultValue = "0") Integer page)
-//    {
-//        return new ResponseEntity<>(
-//                ResponseGeneral.of(200,"success",
-//                        fresherService.findFresherByWorkingId(principal,workingId, page)),
-//                HttpStatus.OK);
-//    }
+//    ------------------ Get List Fresher By Center ID -------------------------
+    @Operation( summary = "Get List Fresher By Center ID",
+            description =  "Get List Fresher By Center ID. If the role of the currently logged-in user is Admin, they can view all information. However, if the role is Market Director, Mentor, or Center Director, they can only view the information if the fresher belongs to the center where the user works.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value =  """
+                        {
+                          "status": 200,
+                          "message": "success",
+                          "data": [{
+                            "idUser": 1,
+                            "username": "1",
+                            "avatar": "1",
+                            "firstName": "1",
+                            "lastName": "1",
+                            "email": "1",
+                            "phone": "1",
+                            "position": "FRESHER",
+                            "is_active": "1",
+                            "curentWorking": "1,"
+                          }],
+                          "timestamp": "2024-07-27"
+                        }
+                    """))
+            )
+    })
+    @PreAuthorize("hasAnyRole('ADMIN','MENTOR','MARKETDIRECTOR','CENTERDIRECTOR')")
+    @GetMapping("/center/{centerId}")
+    public ResponseEntity<?> findFresherByCenterId(@PathVariable Integer centerId,@RequestParam(defaultValue = "0") Integer page)
+    {
+        log.info("find Fresher By Center Id: {}", centerId);
+        return new ResponseEntity<>(
+                ResponseGeneral.of(200,"success",
+                        fresherService.findFresherByCenterId(centerId, page)),
+                HttpStatus.OK);
+    }
+
+    //    ------------------ Get List Fresher By Market ID -------------------------
+    @Operation( summary = "Get List Fresher By Market ID",
+            description =  "Get List Fresher By Market ID. If the role of the currently logged-in user is Admin, they can view all information. However, if the role is Market Director, Mentor, or Center Director, they can only view the information if the fresher belongs to the market where the user works.",
+            security = @SecurityRequirement(name = "bearerAuth")
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200",
+                    description = "Success",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value =  """
+                        {
+                          "status": 200,
+                          "message": "success",
+                          "data": [{
+                            "idUser": 1,
+                            "username": "1",
+                            "avatar": "1",
+                            "firstName": "1",
+                            "lastName": "1",
+                            "email": "1",
+                            "phone": "1",
+                            "position": "FRESHER",
+                            "is_active": "1",
+                            "curentWorking": "1,"
+                          }],
+                          "timestamp": "2024-07-27"
+                        }
+                    """))
+            )
+    })
+    @PreAuthorize("hasAnyRole('ADMIN','MARKETDIRECTOR','CENTERDIRECTOR')")
+    @GetMapping("/market/{marketId}")
+    public ResponseEntity<?> findFresherByMarketId(@PathVariable Integer marketId,@RequestParam(defaultValue = "0") Integer page)
+    {
+        log.info("find Fresher By Market Id: {}", marketId);
+        return new ResponseEntity<>(
+                ResponseGeneral.of(200,"success",
+                        fresherService.findFresherByMarketId(marketId, page)),
+                HttpStatus.OK);
+    }
 
 
 

@@ -36,7 +36,7 @@ public class ChatServiceImpl implements ChatService {
         orElseThrow(
                 () -> new UsernameNotFoundException()
         );
-        List<Conservation> conservations=accountConservationRepository.findConservationsByAccount(userLogining);
+        List<Conservation> conservations=accountConservationRepository.findConservationsByAccount_Username(session.getAttributes().get("username").toString());
         for(Conservation conservation:conservations)
         {
 

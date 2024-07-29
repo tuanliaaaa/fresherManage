@@ -14,10 +14,7 @@ import com.g11.FresherManage.exception.base.UnauthorizedException;
 import com.g11.FresherManage.exception.fresher.FresherNotFoundException;
 import com.g11.FresherManage.exception.role.RoleNotFoundException;
 import com.g11.FresherManage.exception.workinghistory.EmployeeNotWorkinWorkingException;
-import com.g11.FresherManage.repository.AccountRepository;
-import com.g11.FresherManage.repository.AccountRoleRepository;
-import com.g11.FresherManage.repository.HistoryWorkingRepository;
-import com.g11.FresherManage.repository.RoleRepository;
+import com.g11.FresherManage.repository.*;
 import com.g11.FresherManage.service.AccountRoleService;
 import com.g11.FresherManage.service.FresherService;
 import com.g11.FresherManage.utils.MapperUtils;
@@ -45,6 +42,7 @@ public class FresherServiceImpl implements FresherService {
     private final RoleRepository roleRepository;
     private final HistoryWorkingRepository historyWorkingRepository;
     private final AccountRoleService accountRoleService;
+    private final WorkingRepository workingRepository;
     @Override
 //    @Cacheable(value = "freshersCache")
     @CacheEvict(value = "freshersCache")
@@ -103,6 +101,10 @@ public class FresherServiceImpl implements FresherService {
         log.info("fresherResponse: {}", fresherResponse);
         return fresherResponse;
     }
+
+
+
+
     @Override
     public FresherResponse getFresherByUsername(String username)
     {
@@ -131,25 +133,53 @@ public class FresherServiceImpl implements FresherService {
         return MapperUtils.toDTOs(freshers, FresherResponse.class);
     }
 
-//    @Override
-//    public List<FresherResponse> findFresherByCenterId(Integer centerId,Integer page)
-//    {
-//        Account userLogining = accountRepository.findByUsername(principal.getName()).
-//            orElseThrow(
-//                    () -> new UsernameNotFoundException()
-//            );
-//        switch (userLogining.getPosition()) {
-//            case "ADMIN":
-//                break;
-//            default:
-//                String curentWorkingLogining = userLogining.getCurentWorking()==null?"":userLogining.getCurentWorking();
-//
-//                if(!curentWorkingLogining.contains(String.valueOf(workingId)+","))
-//                    throw new EmployeeNotWorkinWorkingException();
-//        }
-//        List<Account> freshers= accountRepository.findFresherByWorkingId(workingId,page*10,(page+1)*10);
-//        return MapperUtils.toDTOs(freshers, FresherResponse.class);
-//    }
+    @Override
+    public List<FresherResponse> findFresherByCenterId(Integer centerId,Integer page)
+    {
+        List<String> roleList=accountRoleService.findRolesByUserLoging();
+        List<Account> fresher =accountRepository.findFreshersByWorkingIds(String.valueOf(centerId)+",",page*10,(page+1)*10);
+        if(!roleList.contains("ROLE_ADMIN"))
+        {
+            String username = accountRoleService.getUsername();
+            if(username==null) throw new UnauthorizedException();
+            Account userLogining = accountRepository.findByUsername(username).
+                    orElseThrow(
+                            () -> new UsernameNotFoundException()
+                    );
+
+            String curentWorkingLogining = userLogining.getCurentWorking()==null?"":userLogining.getCurentWorking();
+
+            if(!curentWorkingLogining.contains(String.valueOf(centerId)+","))
+                throw new EmployeeNotWorkinWorkingException();
+        }
+        List<FresherResponse> fresherResponseList= MapperUtils.toDTOs(fresher,FresherResponse.class);
+        log.info("findFreshers success: {} ",fresherResponseList);
+        return fresherResponseList;
+    }
+
+    @Override
+    public List<FresherResponse> findFresherByMarketId(Integer marketId,Integer page)
+    {
+        List<String> roleList=accountRoleService.findRolesByUserLoging();
+        List<Account> fresher =accountRepository.findFreshersByWorkingIds(String.valueOf(marketId)+"*",page*10,(page+1)*10);
+        if(!roleList.contains("ROLE_ADMIN"))
+        {
+            String username = accountRoleService.getUsername();
+            if(username==null) throw new UnauthorizedException();
+            Account userLogining = accountRepository.findByUsername(username).
+                    orElseThrow(
+                            () -> new UsernameNotFoundException()
+                    );
+
+            String curentWorkingLogining = userLogining.getCurentWorking()==null?"":userLogining.getCurentWorking();
+
+            if(!curentWorkingLogining.contains(String.valueOf(marketId)+"*,"))
+                throw new EmployeeNotWorkinWorkingException();
+        }
+        List<FresherResponse> fresherResponseList= MapperUtils.toDTOs(fresher,FresherResponse.class);
+        log.info("find Freshers by market id success: {} ",fresherResponseList);
+        return fresherResponseList;
+    }
 
     @Override
     public FresherResponse createFresher(FresherRequest fresherRequest)
