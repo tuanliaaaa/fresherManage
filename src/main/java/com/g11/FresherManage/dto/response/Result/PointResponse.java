@@ -1,4 +1,4 @@
-package com.g11.FresherManage.dto.response.point;
+package com.g11.FresherManage.dto.response.Result;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -1,10 +1,11 @@
 package com.g11.FresherManage.service;
 
-import com.g11.FresherManage.dto.response.point.PointResponse;
-
-import java.security.Principal;
+import com.g11.FresherManage.dto.request.ResultRequest;
+import com.g11.FresherManage.dto.response.Result.PointResponse;
+import com.g11.FresherManage.dto.response.Result.ResultResponse;
 
 public interface PointService {
-    PointResponse findMyPoint(Principal principal);
-    PointResponse getPointByFresherId(Principal principal, int fresherId);
+    PointResponse findPointByUsername(String username);
+    PointResponse getPointByFresherId(Integer fresherId);
+    ResultResponse addPointByFresherId(Integer fresherId, ResultRequest resultRequest);
 }
