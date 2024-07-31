@@ -9,6 +9,9 @@ public class Test {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int testId;
+    private String titleTest;
+    private String description;
+    private Integer numberTest;
     @ManyToOne
     @JoinColumn(name = "language_id")
     private Language language;

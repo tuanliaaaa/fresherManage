@@ -3,9 +3,12 @@ package com.g11.FresherManage.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public class AccountRole {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

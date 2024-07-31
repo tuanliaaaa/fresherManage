@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,4 +59,10 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
             "JOIN role r ON ar.role_id = r.id_Role " +
             "WHERE a.username = :username ", nativeQuery = true)
     List<Object[]> findInforByUsernameWithRoles(@Param("username") String username);
+
+
+    @Query("SELECT COUNT(ac) FROM Account ac WHERE ac.position = 'FRESHER' AND ac.createdAt <= :searchDate AND (ac.endAt IS NULL OR ac.endAt >= :searchDate)")
+    Long countFreshersActiveOnDate(@Param("searchDate") LocalDate searchDate);
+
+
 }

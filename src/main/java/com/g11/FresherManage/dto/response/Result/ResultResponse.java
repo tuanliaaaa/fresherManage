@@ -16,14 +16,24 @@ import java.time.LocalDateTime;
 public class ResultResponse {
     private int resultId;
     private Integer testPoint;
-    private LocalDateTime createTime;
+    private LocalDateTime dueDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+    private Integer numberTest;
+    private Boolean status;
     private Integer fresher;
     private Integer mentor;
+
     public ResultResponse(Result result) {
         this.resultId = result.getResultId();
         this.testPoint = result.getTestPoint();
-        this.createTime = result.getCreateTime();
         this.fresher= result.getFresher().getIdUser();
         this.mentor= result.getMentor().getIdUser();
+        this.dueDate = result.getDueDate();
+        this.startDate = result.getStartDate();
+        this.endDate = result.getEndDate();
+        this.numberTest = result.getNumberTest();
+        this.status = result.getStatus();
+
     }
 }

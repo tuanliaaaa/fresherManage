@@ -2,7 +2,6 @@ package com.g11.FresherManage.controller;
 
 import com.g11.FresherManage.dto.ResponseGeneral;
 import com.g11.FresherManage.dto.request.ResultRequest;
-import com.g11.FresherManage.service.MarketService;
 import com.g11.FresherManage.service.PointService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -19,18 +18,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.util.List;
-
-import static org.springframework.security.authorization.AuthorityReactiveAuthorizationManager.hasRole;
 
 @RestController
 @RequestMapping("/api/v1/points")
 @Slf4j
 @RequiredArgsConstructor
-public class PointController {
+public class ResultController {
     private final PointService pointService;
     @Operation( summary = "Get point By fresher Id",
-            description =  "GGet point By fresher Id.",
+            description =  "Get point By fresher Id.",
             security = @SecurityRequirement(name = "bearerAuth"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success",
@@ -69,13 +65,20 @@ public class PointController {
                             mediaType = "application/json",
                             examples = @ExampleObject(value = """
                                     {
-                                        "status": 201,
-                                        "message": "success",
-                                        "data": {
-                                          "lessson3": 9
-                                        },
-                                        "timestamp": "2024-07-30"
-                                      }
+                                         "status": 201,
+                                         "message": "success",
+                                         "data": {
+                                           "resultId": 1,
+                                           "testPoint": 2,
+                                           "dueDate": "2024-09-01T12:00:00",
+                                           "startDate": "2024-08-01T12:00:00",
+                                           "endDate": "2024-08-30T12:00:00",
+                                           "numberTest": 1,
+                                           "status": true,
+                                           "fresher": 4,
+                                           "mentor": 3
+                                         },
+                                         "timestamp": "2024-07-30"
                                       """))),
     })
     @PreAuthorize("hasAnyRole('MENTOR')")
@@ -87,7 +90,7 @@ public class PointController {
         return new ResponseEntity<>(
                 ResponseGeneral.of(201,"success",
                         pointService.addPointByFresherId(fresherId,resultRequest))
-                , HttpStatus.OK);
+                , HttpStatus.CREATED);
     }
 
     @Operation( summary = "Get point of logged-in fresher",
