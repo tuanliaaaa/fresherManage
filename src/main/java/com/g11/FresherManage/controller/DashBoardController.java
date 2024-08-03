@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/dashboards")
@@ -68,6 +69,18 @@ public class DashBoardController {
          return new ResponseEntity<>(
                 ResponseGeneral.ofCreated("success",
                         statistisService.findStatisticFresherAmount(startDate,endDate,workingType,workingId)), HttpStatus.OK);
+
+    }
+    @GetMapping("/fresher/point")
+    public ResponseEntity<?> StatisticFresherPoint(
+            @RequestParam(value = "workingId",required = false)  Integer workingId,
+            @RequestParam(value = "workingType",required = false) String workingType,
+            @RequestParam(value = "rankPointList",required = true) List<Double> rankPointList,
+            @RequestParam(value="typePoint",required = true) String typePoint
+    ) {
+        return new ResponseEntity<>(
+                ResponseGeneral.ofCreated("success",
+                        statistisService.findStatisticFresherPoint(rankPointList,typePoint,workingType,workingId)), HttpStatus.OK);
 
     }
 }

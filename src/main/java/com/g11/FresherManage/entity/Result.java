@@ -21,10 +21,10 @@ public class Result {
     private LocalDateTime endDate;
     private Integer numberTest;
     private Boolean status;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "fresher_id")
     private Account fresher;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "mentor_id")
     private Account mentor;
     public Result(Account mentor, Account fresher, Integer testPoint) {
