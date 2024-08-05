@@ -1,4 +1,3 @@
 - Quản lý Fresher
 - Phân tích:
-  ![image](https://github.com/tuanliaaaa/fresherManage/assets/97106096/02cffe96-3ca2-4492-89a6-d7cbb280fb55)
-
+![image](https://github.com/user-attachments/assets/fa1ad309-6bb9-4d89-bcb4-5e93e5c3a8eb)
