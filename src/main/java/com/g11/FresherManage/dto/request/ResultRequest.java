@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ResultRequest {
-    private Integer numberTest;
+    private Integer id;
     private Integer testPoint;
 }

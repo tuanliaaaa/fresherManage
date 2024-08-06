@@ -14,7 +14,7 @@ public interface StatistisService
     FresherAmountResponse getAmountCountFresherToDay(LocalDate daySearch);
     FresherAmountResponse getAmountCountFresherByCenterToDay(LocalDate daySearch,Integer centerId);
     FresherAmountResponse getAmountCountFresherByMarketToDay(LocalDate daySearch,Integer centerId);
-    List<FresherPointResponse> findStatisticFresherPoint(List<Double> rankPointList,String typePoint,String workingType, Integer workingId);
+    List<FresherPointResponse> findStatisticFresherPoint(List<Double> rankPointList,String typePoint);
     FresherPointResponse countAccountsWithAvgInRange(Double fromPoint, Double toPoint);
     FresherPointResponse countAccountsWithTestInRange(Integer numberTest,Double fromPoint, Double toPoint);
 

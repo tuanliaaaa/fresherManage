@@ -108,13 +108,31 @@ public class FresherServiceImpl implements FresherService {
         // Get role of account logging.
         List<String> roleList=accountRoleService.findRolesByUserLoging();
         Account fresher = accountRepository.getByFresherId(fresherId).orElseThrow(FresherNotFoundException::new);
-        if(!roleList.contains("ROLE_ADMIN"))
+        if(!roleList.contains("ROLE_ADMIN")&& roleList.contains("ROLE_MARKETDIRECTOR"))
         {
-            //Check if the person is managing any freshers.
+            // Check if the market director is working at the market where the fresher is working.
             Account userLogining = accountRepository.findByUsername(username).
                     orElseThrow(
                             () -> new UsernameNotFoundException()
                     );
+
+            String curentWorkingLogining = userLogining.getCurentWorking()==null?"":userLogining.getCurentWorking();
+            String curentWorkingFresher = fresher.getCurentWorking()==null?"":fresher.getCurentWorking();
+            if((curentWorkingFresher.equals("")&&curentWorkingLogining.equals("")))
+                throw new EmployeeNotWorkinWorkingException();
+            List<String> workingIdsLoging = List.of(curentWorkingFresher.split(","))
+                    .stream()
+                    .filter(id -> id.endsWith("*"))
+                    .collect(Collectors.toList());
+            if(!curentWorkingLogining.contains(workingIdsLoging.get(0)))
+                throw new EmployeeNotWorkinWorkingException();
+        } else if (!roleList.contains("ROLE_ADMIN")) {
+            //Check if the center director or mentor is working at the center where the fresher is working.
+            Account userLogining = accountRepository.findByUsername(username).
+                    orElseThrow(
+                            () -> new UsernameNotFoundException()
+                    );
+
             String curentWorkingLogining = userLogining.getCurentWorking()==null?"":userLogining.getCurentWorking();
             String curentWorkingFresher = fresher.getCurentWorking()==null?"":fresher.getCurentWorking();
             if((curentWorkingFresher.equals("")&&curentWorkingLogining.equals("")))
@@ -123,8 +141,16 @@ public class FresherServiceImpl implements FresherService {
                     .stream()
                     .filter(id -> !id.endsWith("*"))
                     .collect(Collectors.toList());
-            if(!curentWorkingLogining.contains(workingIdsLoging.get(0)+","))
-                throw new EmployeeNotWorkinWorkingException();
+            int dem=0;
+            for(String workingId : workingIdsLoging)
+            {
+                if(curentWorkingLogining.contains(workingId))
+                {
+                    dem++;
+                    break;
+                }
+            }
+            if(dem==0) throw new EmployeeNotWorkinWorkingException();
         }
         FresherResponse fresherResponse = MapperUtils.toDTO(fresher, FresherResponse.class);
         return fresherResponse;

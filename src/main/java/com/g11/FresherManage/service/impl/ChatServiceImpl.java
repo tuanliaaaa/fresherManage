@@ -1,5 +1,6 @@
 package com.g11.FresherManage.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.g11.FresherManage.dto.request.message.MessageRequest;
 import com.g11.FresherManage.entity.Account;
 import com.g11.FresherManage.entity.AccountConservation;
@@ -11,7 +12,6 @@ import com.g11.FresherManage.repository.AccountConservationRepository;
 import com.g11.FresherManage.repository.AccountRepository;
 import com.g11.FresherManage.repository.ConservationRepository;
 import com.g11.FresherManage.service.ChatService;
-import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -32,8 +32,8 @@ import java.util.concurrent.locks.Lock;
 @Slf4j
 public class ChatServiceImpl implements ChatService {
     private final AccountRepository accountRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final ConservationRepository conservationRepository;
-    private final Gson gson = new Gson();
     private final AccountConservationRepository accountConservationRepository;
     @Override
     public void addSession(WebSocketSession session, Lock lock,Map<String, Map<String,WebSocketSession>> topics,Map<String,Map<String,WebSocketSession>> sessions) throws Exception {
@@ -77,7 +77,7 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public void handleMessage(WebSocketSession session, TextMessage message,Lock lock,Map<String, Map<String,WebSocketSession>> topics,Map<String,Map<String,WebSocketSession>> sessions) throws IOException {
         try {
-            MessageRequest msg = gson.fromJson(message.getPayload(), MessageRequest.class);
+            MessageRequest msg = objectMapper.readValue(message.getPayload(), MessageRequest.class);
             log.info("handleMessage topic:{}",msg);
             Conservation conservation =conservationRepository.findById(msg.getConservationId()).orElseThrow(
                     ()-> new ConservationNotFoundException()

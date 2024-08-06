@@ -7,9 +7,11 @@ import com.g11.FresherManage.entity.Account;
 import com.g11.FresherManage.entity.Result;
 import com.g11.FresherManage.entity.Tutorial;
 import com.g11.FresherManage.exception.account.UsernameNotFoundException;
+import com.g11.FresherManage.exception.base.NotFoundException;
 import com.g11.FresherManage.exception.base.UnauthorizedException;
 import com.g11.FresherManage.exception.fresher.FresherNotFoundException;
 import com.g11.FresherManage.exception.result.ResultNotFoundException;
+import com.g11.FresherManage.exception.test.TestNotFoundException;
 import com.g11.FresherManage.exception.tutorial.MentorNotTutorialThisFresherException;
 import com.g11.FresherManage.exception.tutorial.TutorialNotFoundException;
 import com.g11.FresherManage.exception.workinghistory.EmployeeNotWorkinWorkingException;
@@ -41,31 +43,33 @@ public class PointServiceImpl implements PointService {
                 orElseThrow(
                         () -> new UsernameNotFoundException()
                 );
-        List<Result> points = resultRepository.findByFresherIdAndStatusIs(userLogining.getIdUser());
+        Object[] resulsts= resultRepository.getMaxScoresAndAverageForAccount(userLogining.getIdUser());
+        if(resulsts.length==0){
+            return new PointResponse();
+        }
         PointResponse pointResponse = new PointResponse();
-        if(points.size() > 0){
-            pointResponse.setLessson1(points.get(0).getTestPoint());
-        }
-        if(points.size() > 1){
-            pointResponse.setLessson1(points.get(1).getTestPoint());
-        }
-        if(points.size() > 2){
-            pointResponse.setLessson2(points.get(2).getTestPoint());
-            pointResponse.setAverage((pointResponse.getLessson1()+pointResponse.getLessson2()+pointResponse.getLessson3())/3);
-        }
+        Object[] row = (Object[]) resulsts[0];
+        if(row[0]!=null)pointResponse.setLessson1(Double.parseDouble(row[0].toString()));
+        if(row[1]!=null) pointResponse.setLessson2(Double.parseDouble(row[1].toString()));
+        if(row[2]!=null) pointResponse.setLessson3(Double.parseDouble(row[2].toString()));
+        if(row[3]!=null)pointResponse.setAverage(Double.parseDouble(row[3].toString()));
+
         return pointResponse;
     }
 
     @Override
     public PointResponse getPointByFresherId(Integer fresherId)
     {
-
+        //Get username of account logging
         String username = accountRoleService.getUsername();
         if(username==null) throw new UnauthorizedException();
+
+        //Get role of account logging
         List<String> roleList=accountRoleService.findRolesByUserLoging();
         Account fresher = accountRepository.getByFresherId(fresherId).orElseThrow(FresherNotFoundException::new);
-        if(!roleList.contains("ROLE_ADMIN"))
+        if(!roleList.contains("ROLE_ADMIN")&& roleList.contains("ROLE_MARKETDIRECTOR"))
         {
+            // Check if the market director is working at the market where the fresher is working.
             Account userLogining = accountRepository.findByUsername(username).
                     orElseThrow(
                             () -> new UsernameNotFoundException()
@@ -81,26 +85,52 @@ public class PointServiceImpl implements PointService {
                     .collect(Collectors.toList());
             if(!curentWorkingLogining.contains(workingIdsLoging.get(0)))
                 throw new EmployeeNotWorkinWorkingException();
+        } else if (!roleList.contains("ROLE_ADMIN")) {
+            //Check if the center director or mentor is working at the center where the fresher is working.
+            Account userLogining = accountRepository.findByUsername(username).
+                    orElseThrow(
+                            () -> new UsernameNotFoundException()
+                    );
+
+            String curentWorkingLogining = userLogining.getCurentWorking()==null?"":userLogining.getCurentWorking();
+            String curentWorkingFresher = fresher.getCurentWorking()==null?"":fresher.getCurentWorking();
+            if((curentWorkingFresher.equals("")&&curentWorkingLogining.equals("")))
+                throw new EmployeeNotWorkinWorkingException();
+            List<String> workingIdsLoging = List.of(curentWorkingFresher.split(","))
+                    .stream()
+                    .filter(id -> !id.endsWith("*"))
+                    .collect(Collectors.toList());
+            int dem=0;
+            for(String workingId : workingIdsLoging)
+            {
+                if(curentWorkingLogining.contains(workingId))
+                {
+                    dem++;
+                    break;
+                }
+            }
+            if(dem==0) throw new EmployeeNotWorkinWorkingException();
         }
-        List<Result> points = resultRepository.findByFresherIdAndStatusIs(fresher.getIdUser());
+        // Get point By fresherId
+        Object[] resulsts= resultRepository.getMaxScoresAndAverageForAccount(fresherId);
+        if(resulsts.length==0){
+            return new PointResponse();
+        }
         PointResponse pointResponse = new PointResponse();
-        if(points.size() > 0){
-            pointResponse.setLessson1(points.get(0).getTestPoint());
-        }
-        if(points.size() > 1){
-            pointResponse.setLessson1(points.get(1).getTestPoint());
-        }
-        if(points.size() > 2){
-            pointResponse.setLessson2(points.get(2).getTestPoint());
-            pointResponse.setAverage((pointResponse.getLessson1()+pointResponse.getLessson2()+pointResponse.getLessson3())/3);
-        }
+        Object[] row = (Object[]) resulsts[0];
+        if(row[0]!=null)pointResponse.setLessson1(Double.parseDouble(row[0].toString()));
+        if(row[1]!=null) pointResponse.setLessson2(Double.parseDouble(row[1].toString()));
+        if(row[2]!=null) pointResponse.setLessson3(Double.parseDouble(row[2].toString()));
+        if(row[3]!=null)pointResponse.setAverage(Double.parseDouble(row[3].toString()));
+
         return pointResponse;
     }
     @Override
     public ResultResponse addPointByFresherId(Integer fresherId, ResultRequest resultRequest)
     {
-        List<Result> results=resultRepository.findByFresherIdAndStatusIsFalseAndNumberTest(fresherId,resultRequest.getNumberTest());
-        if(results.size()==0) throw new ResultNotFoundException();
+        Result result=resultRepository.findById(resultRequest.getId()).orElseThrow(
+                ()->new TestNotFoundException()
+        );
         List<Tutorial> tutorials =tutorialRepository.findAllByStatusIsAAndFresherIdUser(fresherId);
         if(tutorials.size()==0) throw new TutorialNotFoundException();
         List<String> roleList=accountRoleService.findRolesByUserLoging();
@@ -114,10 +144,10 @@ public class PointServiceImpl implements PointService {
             if(mentorLogged.getIdUser()!=tutorials.get(0).getMentor().getIdUser())throw  new MentorNotTutorialThisFresherException();
         }
 
-        results.get(0).setMentor(tutorials.get(0).getMentor());
-        results.get(0).setTestPoint(resultRequest.getTestPoint());
-        results.get(0).setStatus(true);
-        Result resultsNew=resultRepository.save(results.get(0));
+        result.setMentor(tutorials.get(0).getMentor());
+        result.setTestPoint(resultRequest.getTestPoint());
+        result.setStatus(true);
+        Result resultsNew=resultRepository.save(result);
         return new ResultResponse(resultsNew);
     }
 

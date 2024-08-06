@@ -29,36 +29,43 @@ import java.util.List;
 public class DashBoardController {
     private final StatistisService statistisService;
 
-//    @Operation( summary = "Get Fresher Statistics",
-//            description =  "Get the center where the logged-in user is working.If the position is Market Director, get all centers under the markets managed by that person. If the position is Mentor or Center Director, get only the center where that person is working.",
-//            security = @SecurityRequirement(name = "bearerAuth"))
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Success",
-//                    content = @Content(
-//                            mediaType = "application/json",
-//                            examples = @ExampleObject(value = """
-//                                    {
-//                                      "status": 200,
-//                                      "message": "success",
-//                                      "data": [
-//                                        {
-//                                          "workingId": 2,
-//                                          "workingName": "Mi1",
-//                                          "workingType": "CENTER",
-//                                          "workingStatus": "1"
-//                                        },
-//                                        {
-//                                          "workingId": 3,
-//                                          "workingName": "Mi2",
-//                                          "workingType": "CENTER",
-//                                          "workingStatus": "1"
-//                                        }
-//                                      ],
-//                                      "timestamp": "2024-07-28"
-//                                    }
-//                                    """))),
-//    })
-//    @PreAuthorize("hasAnyRole('ADMIN','FRESHER','MENTOR','MARKETDIRECTOR','CENTERDIRECTOR')")
+    @Operation( summary = "Retrieve the number of Freshers by date for the entire company, a center, or a market.",
+            description =  "If workingType is null, you will retrieve the total number of freshers for each day. If workingType is Market, you will retrieve the total number of freshers in the market for each day. If workingType is Center, you will retrieve the total number of freshers in the center for each day.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    [{
+                                            "status": 200,
+                                            "message": "success",
+                                            "data": [
+                                                {
+                                                    "date": "2024-07-02",
+                                                    "amount": 0
+                                                },
+                                                {
+                                                    "date": "2024-07-03",
+                                                    "amount": 0
+                                                },
+                                                {
+                                                    "date": "2024-07-04",
+                                                    "amount": 0
+                                                },
+                                                {
+                                                    "date": "2024-07-05",
+                                                    "amount": 0
+                                                },
+                                                {
+                                                    "date": "2024-07-06",
+                                                    "amount": 0
+                                                },
+                                      "timestamp": "2024-07-28"
+                                    ]
+                                    """))),
+    })
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/fresher/amount")
     public ResponseEntity<?> StatisticFresherAmount(
             @RequestParam(value = "workingId",required = false)  Integer workingId,
@@ -67,20 +74,45 @@ public class DashBoardController {
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
     ) {
          return new ResponseEntity<>(
-                ResponseGeneral.ofCreated("success",
+                ResponseGeneral.of(200,"success",
                         statistisService.findStatisticFresherAmount(startDate,endDate,workingType,workingId)), HttpStatus.OK);
 
     }
+
+    @Operation( summary = "Get the score statistics.",
+            description =  "You will pass in a list of score ranges, and it will return the number of freshers corresponding to those scores.You can choose avg or test 1 test 2 test3.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                       "status": 201,
+                                       "message": "success",
+                                       "data": [
+                                         {
+                                           "rankPoint": 1,
+                                           "amount": 0
+                                         },
+                                         {
+                                           "rankPoint": 10,
+                                           "amount": 0
+                                         }
+                                       ],
+                                       "timestamp": "2024-08-06"
+                                     }
+                                    """))),
+    })
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @GetMapping("/fresher/point")
     public ResponseEntity<?> StatisticFresherPoint(
-            @RequestParam(value = "workingId",required = false)  Integer workingId,
-            @RequestParam(value = "workingType",required = false) String workingType,
             @RequestParam(value = "rankPointList",required = true) List<Double> rankPointList,
             @RequestParam(value="typePoint",required = true) String typePoint
     ) {
         return new ResponseEntity<>(
                 ResponseGeneral.ofCreated("success",
-                        statistisService.findStatisticFresherPoint(rankPointList,typePoint,workingType,workingId)), HttpStatus.OK);
+                        statistisService.findStatisticFresherPoint(rankPointList,typePoint)), HttpStatus.OK);
 
     }
 }

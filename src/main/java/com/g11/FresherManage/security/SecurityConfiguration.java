@@ -1,6 +1,5 @@
 package com.g11.FresherManage.security;
 
-import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

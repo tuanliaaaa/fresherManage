@@ -29,11 +29,12 @@ public class StatisticServiceImpl implements StatistisService {
     private final ResultRepository resultRepository;
 
     @Override
-    public List<FresherPointResponse> findStatisticFresherPoint(List<Double> rankPointList,String typePoint,String workingType, Integer workingId)
+    public List<FresherPointResponse> findStatisticFresherPoint(List<Double> rankPointList,String typePoint)
     {
         List<FresherPointResponse> fresherPointResponseList = new ArrayList<>();
         if(typePoint.equals("avg"))
         {
+            // Get Rank Point from to with avg point
             for(int i=0;i<rankPointList.size();i++)
             {
                 if(i==0)fresherPointResponseList.add(
@@ -51,6 +52,7 @@ public class StatisticServiceImpl implements StatistisService {
                             rankPointList.get(rankPointList.size()-1)
                             ,10.0));
         } else {
+            // Get Rank Point from to with Test1 or tesst2 or test3
             for(int i=0;i<rankPointList.size();i++)
             {
                 if(i==0)fresherPointResponseList.add(countAccountsWithTestInRange(Integer.parseInt(typePoint),0.0,rankPointList.get(0)));

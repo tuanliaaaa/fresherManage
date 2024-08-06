@@ -6,8 +6,8 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class PointResponse {
-    private float Lessson1;
-    private float Lessson2;
-    private float Lessson3;
-    private float average;
+    private Double Lessson1;
+    private Double Lessson2;
+    private Double Lessson3;
+    private Double average;
 }
