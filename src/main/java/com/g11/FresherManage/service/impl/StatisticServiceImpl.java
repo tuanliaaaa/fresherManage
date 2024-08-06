@@ -151,13 +151,13 @@ public class StatisticServiceImpl implements StatistisService {
                 "JOIN hw.working w on hw.working=w " +
                 "WHERE (:centerID is null or w.id=:centerID) " +
                 "AND (:marketID is null or w.market.id=:marketID) " +
-                "GROUP BY a.idUser, a.username, w.workingName, w.market.workingName " +
+                "GROUP BY a.idUser, a.username, w.workingName, w.market.workingName ,w.market.id ,w.id " +
                 "HAVING (:test1 IS NULL OR MAX(CASE WHEN r.numberTest = 1 THEN r.testPoint END) = :test1) " +
                 "AND (:test2 IS NULL OR MAX(CASE WHEN r.numberTest = 2 THEN r.testPoint END) = :test2) " +
                 "AND (:test3 IS NULL OR MAX(CASE WHEN r.numberTest = 3 THEN r.testPoint END) = :test3) " +
                 "AND (:avg IS NULL OR (MAX(CASE WHEN r.numberTest = 1 THEN r.testPoint END) + " +
                 "MAX(CASE WHEN r.numberTest = 2 THEN r.testPoint END) + " +
-                "MAX(CASE WHEN r.numberTest = 3 THEN r.testPoint END)) / 3.0 = :avg)";
+                "MAX(CASE WHEN r.numberTest = 3 THEN r.testPoint END)) / 3.0 = :avg) ";
         StringBuilder orderByClause = new StringBuilder();
         if(sort!=null)
             for (Map<String, Integer> sortStr : sort) {

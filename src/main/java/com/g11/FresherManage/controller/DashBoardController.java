@@ -1,5 +1,9 @@
 package com.g11.FresherManage.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.g11.FresherManage.dto.ResponseGeneral;
 import com.g11.FresherManage.service.StatistisService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -152,11 +157,20 @@ public class DashBoardController {
             @RequestParam(value = "avg", required = false) Double avg,
             @RequestParam(value = "idCenter", required = false) Integer idCenter,
             @RequestParam(value = "idmarket", required = false) Integer idmarket,
-            @RequestParam(value = "sort", required = false) List<Map<String,Integer>> sort
+            @RequestParam(value = "sort", required = false) String sort
     ) {
+        List<Map<String, Integer>> sortList = new ArrayList<>();
+        if (sort != null) {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                sortList = objectMapper.readValue(sort, new TypeReference<List<Map<String, Integer>>>() {});
+            } catch (JsonProcessingException e) {
+                return ResponseEntity.badRequest().body("Invalid sort parameter");
+            }
+        }
         return new ResponseEntity<>(
                 ResponseGeneral.ofCreated("success",
-                        statistisService.findStatisticTableDashboad(test1,test2,test3,avg,idCenter,idmarket,sort)), HttpStatus.OK);
+                        statistisService.findStatisticTableDashboad(test1,test2,test3,avg,idCenter,idmarket,sortList)), HttpStatus.OK);
 
     }
 }
