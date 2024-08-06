@@ -29,18 +29,18 @@ public class RoleInitializer implements ApplicationListener<ContextRefreshedEven
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if (roleRepository.count() == 0&&accountRepository.count() == 0&&accountRoleRepository.count() == 0) {
-            Role roleFresher=roleRepository.save(new Role(1,"ROLE_FRESHER"));
-            Role roleAdmin=roleRepository.save(new Role(2,"ROLE_ADMIN"));
-            Role roleMentor =roleRepository.save(new Role(3,"ROLE_MENTOR"));
-            roleRepository.save(new Role(4,"ROLE_CENTERDIRECTOR"));
-            roleRepository.save(new Role(5,"ROLE_MARKETDIRECTOR"));
-            Account accountAdmin=accountRepository.save(new Account(3,"admin","$2a$10$tEWOJ6PlKtjZTqhIZg1vl.3opnE.FusBZpWgeVi3ouuQ8y4tyra06","/tuan.img","Lương Nhật","Tuấn","nhattuan44t@gmail.com","0379230864","","active", LocalDate.parse("2024-07-03"),LocalDate.parse("2024-07-02"),""));
-            Account accountMentor=accountRepository.save(new Account(2,"mentor","$2a$10$tEWOJ6PlKtjZTqhIZg1vl.3opnE.FusBZpWgeVi3ouuQ8y4tyra06","/tuan.img","Lương Nhật","Tuấn","nhattuan44t@gmail.com","0379230864","MENTOR","active",LocalDate.parse("2024-07-03"),LocalDate.parse("2024-07-02"),""));
-            Account accountFresher=accountRepository.save(new Account(1,"nhattuan44t@gmail.com","$2a$10$tEWOJ6PlKtjZTqhIZg1vl.3opnE.FusBZpWgeVi3ouuQ8y4tyra06","/tuan.img","Lương Nhật","Tuấn","nhattuan44t@gmail.com","0379230864","FRESHER","active",LocalDate.parse("2024-07-03"),LocalDate.parse("2024-07-02"),""));
-
-            accountRoleRepository.save(new AccountRole(3,roleFresher,accountFresher));
-            accountRoleRepository.save(new AccountRole(2,roleAdmin,accountMentor));
-            accountRoleRepository.save(new AccountRole(1,roleAdmin,accountAdmin));
+//            Role roleFresher=roleRepository.save(new Role(1,"ROLE_FRESHER"));
+//            Role roleAdmin=roleRepository.save(new Role(2,"ROLE_ADMIN"));
+//            Role roleMentor =roleRepository.save(new Role(3,"ROLE_MENTOR"));
+//            roleRepository.save(new Role(4,"ROLE_CENTERDIRECTOR"));
+//            roleRepository.save(new Role(5,"ROLE_MARKETDIRECTOR"));
+//            Account accountAdmin=accountRepository.save(new Account(3,"admin","$2a$10$tEWOJ6PlKtjZTqhIZg1vl.3opnE.FusBZpWgeVi3ouuQ8y4tyra06","/tuan.img","Lương Nhật","Tuấn","nhattuan44t@gmail.com","0379230864","","active", LocalDate.parse("2024-07-03"),LocalDate.parse("2024-07-02"),""));
+//            Account accountMentor=accountRepository.save(new Account(2,"mentor","$2a$10$tEWOJ6PlKtjZTqhIZg1vl.3opnE.FusBZpWgeVi3ouuQ8y4tyra06","/tuan.img","Lương Nhật","Tuấn","nhattuan44t@gmail.com","0379230864","MENTOR","active",LocalDate.parse("2024-07-03"),LocalDate.parse("2024-07-02"),""));
+//            Account accountFresher=accountRepository.save(new Account(1,"nhattuan44t@gmail.com","$2a$10$tEWOJ6PlKtjZTqhIZg1vl.3opnE.FusBZpWgeVi3ouuQ8y4tyra06","/tuan.img","Lương Nhật","Tuấn","nhattuan44t@gmail.com","0379230864","FRESHER","active",LocalDate.parse("2024-07-03"),LocalDate.parse("2024-07-02"),""));
+//
+//            accountRoleRepository.save(new AccountRole(3,roleFresher,accountFresher));
+//            accountRoleRepository.save(new AccountRole(2,roleAdmin,accountMentor));
+//            accountRoleRepository.save(new AccountRole(1,roleAdmin,accountAdmin));
 //            for (int i = 1; i <= 1_000_000; i++) {
 //                String email = "user" + i + "@example.com";
 //                String phone = "037923" + String.format("%04d", i % 10000);
