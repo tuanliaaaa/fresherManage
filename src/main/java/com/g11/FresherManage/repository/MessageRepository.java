@@ -11,7 +11,7 @@ import java.util.List;
 
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Integer> {
-    @Query(value = "SELECT * FROM Message WHERE conservation_id = :conservationId ORDER BY id_message DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
+    @Query(value = "SELECT * FROM Message WHERE conservation_id = :conservationId ORDER BY create_at DESC LIMIT :limit OFFSET :offset", nativeQuery = true)
     List<Message> findMessagesByConservationIdOrderByMessageIdDesc(@Param("conservationId") int conservationId,
                                                                    @Param("offset") int offset,
                                                                    @Param("limit") int limit);

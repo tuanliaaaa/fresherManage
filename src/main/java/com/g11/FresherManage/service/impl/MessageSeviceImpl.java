@@ -39,7 +39,6 @@ public class MessageSeviceImpl implements MessageService {
         List<Message> messages = messageRepository.findMessagesByConservationIdOrderByMessageIdDesc(conservationId, page * 10, (page + 1) * 10);
         List<MessageResponse> messageResponses = new ArrayList<>();
         for (Message message : messages) messageResponses.add(new MessageResponse(message));
-        log.info("findMessageByConservationId success", messageResponses);
         return messageResponses;
     }
 }

@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,6 +21,8 @@ public class MessageResponse {
     private Integer conservation;
     private String is_view;
     private String status;
+    private LocalDateTime createAt;
+
     public MessageResponse(Message message)
     {
         this.conservation=message.getConservation().getIdConservation();
@@ -27,5 +31,6 @@ public class MessageResponse {
         this.sender =message.getSender().getIdUser();
         this.idMessage=message.getIdMessage();
         this.is_view=message.getIs_view();
+        this.createAt=message.getCreateAt();
     }
 }
