@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.g11.FresherManage.dto.ResponseError;
 import com.g11.FresherManage.dto.ResponseGeneral;
 import com.g11.FresherManage.service.StatistisService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -165,7 +166,8 @@ public class DashBoardController {
                 ObjectMapper objectMapper = new ObjectMapper();
                 sortList = objectMapper.readValue(sort, new TypeReference<List<Map<String, Integer>>>() {});
             } catch (JsonProcessingException e) {
-                return ResponseEntity.badRequest().body("Invalid sort parameter");
+                return new ResponseEntity<>(
+                        ResponseError.of(400,"Validation","Sort is not Json","com.vmo.group"),HttpStatus.BAD_REQUEST);
             }
         }
         return new ResponseEntity<>(
