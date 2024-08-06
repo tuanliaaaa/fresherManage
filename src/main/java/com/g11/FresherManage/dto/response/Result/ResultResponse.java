@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ResultResponse {
     private int resultId;
-    private Integer testPoint;
+    private Double testPoint;
     private LocalDateTime dueDate;
     private LocalDateTime startDate;
     private LocalDateTime endDate;

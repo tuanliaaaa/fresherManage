@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/dashboards")
@@ -113,6 +115,48 @@ public class DashBoardController {
         return new ResponseEntity<>(
                 ResponseGeneral.ofCreated("success",
                         statistisService.findStatisticFresherPoint(rankPointList,typePoint)), HttpStatus.OK);
+
+    }
+
+    @Operation( summary = "Get table Dashboad.",
+            description =  "Get table Dashboad.",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                       "status": 201,
+                                       "message": "success",
+                                       "data": [
+                                         {
+                                           "rankPoint": 1,
+                                           "amount": 0
+                                         },
+                                         {
+                                           "rankPoint": 10,
+                                           "amount": 0
+                                         }
+                                       ],
+                                       "timestamp": "2024-08-06"
+                                     }
+                                    """))),
+    })
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/tableDashboad")
+    public ResponseEntity<?> StatisticTableDashboad(
+            @RequestParam(value = "test1", required = false) Double test1,
+            @RequestParam(value = "test2", required = false) Double test2,
+            @RequestParam(value = "test3", required = false) Double test3,
+            @RequestParam(value = "avg", required = false) Double avg,
+            @RequestParam(value = "idCenter", required = false) Integer idCenter,
+            @RequestParam(value = "idmarket", required = false) Integer idmarket,
+            @RequestParam(value = "sort", required = false) List<Map<String,Integer>> sort
+    ) {
+        return new ResponseEntity<>(
+                ResponseGeneral.ofCreated("success",
+                        statistisService.findStatisticTableDashboad(test1,test2,test3,avg,idCenter,idmarket,sort)), HttpStatus.OK);
 
     }
 }

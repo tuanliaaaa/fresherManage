@@ -15,7 +15,7 @@ public class Result {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int resultId;
-    private Integer testPoint;
+    private Double testPoint;
     private LocalDateTime dueDate;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
@@ -30,7 +30,7 @@ public class Result {
     @ManyToOne
     @JoinColumn(name = "mentor_id")
     private Account mentor;
-    public Result(Account mentor, Account fresher, Integer testPoint) {
+    public Result(Account mentor, Account fresher, Double testPoint) {
         this.mentor=mentor;
         this.fresher=fresher;
         this.testPoint=testPoint;

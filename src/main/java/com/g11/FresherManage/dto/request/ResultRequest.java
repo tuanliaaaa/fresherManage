@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ResultRequest {
     private Integer id;
-    private Integer testPoint;
+    private Double testPoint;
 }
