@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RefreshTokenRequest {
+public class RefreshTokenRequest
+{
     @NotBlank(message = "refreshToken is mandatory")
     @Schema(description = "This is refresh Token", example ="eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNzIxOTY2ODgyLCJleHAiOjE3MjE5ODQ4ODJ9.kRBv--lYUYMhWtsSduWFC7nC6qcT4TTGq63LbuC_4mQ")
     private String refreshToken;

@@ -69,7 +69,6 @@ public class AccountController {
     @GetMapping("/infor")
     public ResponseEntity<?> findInforAccountLogin(Principal principal)
     {
-        log.info("(infor Account Login) principal: {}", principal);
         String username = principal.getName();
         ResponseGeneral<?> responseGeneral= ResponseGeneral.of(200,
                 "success",accountService.findInforByUsername(username));

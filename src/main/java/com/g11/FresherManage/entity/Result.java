@@ -22,6 +22,9 @@ public class Result {
     private Integer numberTest;
     private Boolean status;
     @ManyToOne
+    @JoinColumn(name = "test_id")
+    private Test test;
+    @ManyToOne
     @JoinColumn(name = "fresher_id")
     private Account fresher;
     @ManyToOne

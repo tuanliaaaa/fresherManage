@@ -12,7 +12,5 @@ public class Test {
     private String titleTest;
     private String description;
     private Integer numberTest;
-    @ManyToOne
-    @JoinColumn(name = "language_id")
-    private Language language;
+    private String language;
 }

@@ -3,6 +3,8 @@ package com.g11.FresherManage.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 public class Message {
@@ -18,4 +20,5 @@ public class Message {
     private Conservation conservation;
     private String is_view;
     private String status;
+    private LocalDateTime createAt;
 }

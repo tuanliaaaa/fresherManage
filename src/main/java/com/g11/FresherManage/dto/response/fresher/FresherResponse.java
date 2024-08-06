@@ -1,8 +1,5 @@
 package com.g11.FresherManage.dto.response.fresher;
 
-import com.g11.FresherManage.entity.Language;
-import com.g11.FresherManage.entity.Working;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

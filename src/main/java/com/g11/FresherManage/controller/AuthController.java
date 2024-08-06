@@ -4,16 +4,13 @@ import com.g11.FresherManage.dto.ResponseGeneral;
 import com.g11.FresherManage.dto.request.auth.LoginRequest;
 import com.g11.FresherManage.dto.request.auth.RefreshTokenRequest;
 import com.g11.FresherManage.dto.response.LoginResponse;
-import com.g11.FresherManage.entity.RefreshToken;
 import com.g11.FresherManage.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import io.swagger.v3.oas.annotations.security.SecuritySchemes;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 @RestController
 @RequestMapping("/api/v1/auths")
 @Slf4j
@@ -72,12 +68,50 @@ public class AuthController {
                                 "  \"timestamp\": \"2024-07-26\"\n" +
                                 "}")))
     })
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(content = @Content(mediaType = "application/json",
+            schema = @Schema(implementation = LoginRequest.class),
+            examples = {
+                    @ExampleObject(name = "Role Fresher",
+                        value = """
+                                {
+                                    "username": "nhattuan44t@gmail.com", 
+                                    "password": "tuan"
+                                }
+                            """),
+                    @ExampleObject(name = "Role Admin",
+                            value = """
+                                {
+                                    "username": "longlh@vmogroup.com", 
+                                    "password": "tuan"
+                                }
+                            """),
+                    @ExampleObject(name = "Role Mentor",
+                            value = """
+                                {
+                                    "username": "dichpv@vmogroup.com", 
+                                    "password": "tuan"
+                                }
+                            """),
+                    @ExampleObject(name = "Role Center Director",
+                            value = """
+                                {
+                                    "username": "minhnc@vmogroup.com", 
+                                    "password": "tuan"
+                                }
+                            """),
+                    @ExampleObject(name = "Role Market Director",
+                            value = """
+                                {
+                                    "username": "longlh@vmogroup.com", 
+                                    "password": "tuan"
+                                }
+                            """)}
+    ))
     @PostMapping("/login")
     public ResponseEntity<?> login(
             @Valid  @RequestBody LoginRequest loginRequest)
     {
 //        System.out.println(new BCryptPasswordEncoder().encode("tuan"));
-        log.info("(login) by username:{} and password:{}", loginRequest.getUsername(),loginRequest.getPassword());
         ResponseGeneral<LoginResponse> responseGeneral=ResponseGeneral.ofCreated(
     "success",
             accountService.login(loginRequest));
@@ -124,7 +158,6 @@ public class AuthController {
     public ResponseEntity<ResponseGeneral<LoginResponse>> refreshToken(
             @Valid @RequestBody RefreshTokenRequest refreshTokenRequest)
     {
-        log.info("(refreshToken) request:{}", refreshTokenRequest);
         ResponseGeneral<LoginResponse> responseGeneral=ResponseGeneral.ofCreated(
     "success", accountService.refreshToken(refreshTokenRequest));
         return new ResponseEntity<>(responseGeneral, HttpStatus.CREATED);
