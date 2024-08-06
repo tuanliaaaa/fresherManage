@@ -4,7 +4,10 @@ import com.g11.FresherManage.dto.response.historyWorking.FresherCenterResponse;
 import com.g11.FresherManage.entity.Account;
 import com.g11.FresherManage.entity.HistoryWorking;
 import com.g11.FresherManage.entity.Working;
+import com.g11.FresherManage.exception.account.AccountIsLockException;
 import com.g11.FresherManage.exception.center.CenterNotFoundException;
+import com.g11.FresherManage.exception.workinghistory.FresherIsNotWorking;
+import com.g11.FresherManage.exception.workinghistory.FresherIsWorking;
 import com.g11.FresherManage.exception.fresher.FresherNotFoundException;
 import com.g11.FresherManage.exception.workinghistory.EmployeeNotWorkinWorkingException;
 import com.g11.FresherManage.repository.AccountRepository;
@@ -28,23 +31,25 @@ public class HistoryWorkingServiceImpl implements HistoryWorkingService {
     @Override
     public FresherCenterResponse addFresherToCenter(Integer centerId, Integer fresherId)
     {
-       Working center= workingRepository.getCenterByCenterId(centerId).orElseThrow(
-                ()-> new CenterNotFoundException()
-        );
        Account fresher = accountRepository.getByFresherId(fresherId).orElseThrow(
                ()-> new FresherNotFoundException()
        );
+       if(fresher.getCurentWorking().trim()!="")throw new FresherIsWorking();
+       if(fresher.getIs_active().equals("lock")) throw new AccountIsLockException();
+       Working center= workingRepository.getCenterByCenterId(centerId).orElseThrow(
+                ()-> new CenterNotFoundException()
+       );
+       //Add current working to account of fresher
        String market=String.valueOf(center.getMarket().getWorkingId())+"*,";
        fresher.setCurentWorking(String.valueOf(center.getWorkingId())+","+market);
        accountRepository.save(fresher);
        HistoryWorking historyWorking= new HistoryWorking(center,fresher);
        historyWorking=historyWorkingRepository.save(historyWorking);
        FresherCenterResponse fresherCenterResponse=new FresherCenterResponse(historyWorking);
-       log.info("add fresherToCenter success: {}",fresherCenterResponse);
        return fresherCenterResponse;
     }
     @Override
-    public FresherCenterResponse transferFresherToCenter( Integer fresherId,Integer newCenterId)
+    public FresherCenterResponse transferFresherToCenter(Integer fresherId,Integer newCenterId)
     {
 
         Working centerNew= workingRepository.getCenterByCenterId(newCenterId).orElseThrow(
@@ -53,6 +58,8 @@ public class HistoryWorkingServiceImpl implements HistoryWorkingService {
         Account fresher = accountRepository.getByFresherId(fresherId).orElseThrow(
                 ()-> new FresherNotFoundException()
         );
+        if(fresher.getCurentWorking().trim()=="")throw new FresherIsNotWorking();
+        if(fresher.getIs_active().equals("lock")) throw new AccountIsLockException();
         List<HistoryWorking> historyWorking=historyWorkingRepository.findHistoryWorkingByAccountIs_status(fresher);
         if(historyWorking.size()==0) throw  new EmployeeNotWorkinWorkingException();
         historyWorking.get(0).set_status(false);
@@ -64,7 +71,6 @@ public class HistoryWorkingServiceImpl implements HistoryWorkingService {
         HistoryWorking historyWorkingNew= new HistoryWorking(centerNew,fresher);
         historyWorkingNew=historyWorkingRepository.save(historyWorkingNew);
         FresherCenterResponse fresherCenterResponse=new FresherCenterResponse(historyWorkingNew);
-        log.info("change fresher To new Center success: {}",fresherCenterResponse);
         return fresherCenterResponse;
     }
 }

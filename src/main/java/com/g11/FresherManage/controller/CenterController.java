@@ -4,10 +4,7 @@ import com.g11.FresherManage.dto.ResponseGeneral;
 import com.g11.FresherManage.dto.request.historyWorking.FresherCenterRequest;
 import com.g11.FresherManage.dto.request.center.CenterRequest;
 import com.g11.FresherManage.dto.request.center.CenterUpdateRequest;
-import com.g11.FresherManage.dto.response.fresher.FresherResponse;
 import com.g11.FresherManage.dto.response.historyWorking.FresherCenterResponse;
-import com.g11.FresherManage.entity.Account;
-import com.g11.FresherManage.entity.HistoryWorking;
 import com.g11.FresherManage.service.CenterService;
 import com.g11.FresherManage.service.HistoryWorkingService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -68,7 +65,6 @@ public class CenterController {
     public ResponseEntity<?> getMyCenterInfor(
             Principal principal)
     {
-        log.info("getMyCenterInfor {}", principal);
         return new ResponseEntity<>(
                 ResponseGeneral.of(200,"success",
                 centerService.findCenterByUsername(principal.getName())), HttpStatus.OK);
@@ -96,12 +92,11 @@ public class CenterController {
                                     }
                                     """))),
     })
-    @PreAuthorize("hasAnyRole('ADMIN','MENTOR','MARKETDIRECTOR','CENTERDIRECTOR')")
+    @PreAuthorize("hasAnyRole('FRESHER','ADMIN','MENTOR','MARKETDIRECTOR','CENTERDIRECTOR')")
     @GetMapping("/{centerId}")
     public ResponseEntity<?> getCenterByCenterId(
         @PathVariable("centerId") Integer centerId)
     {
-        log.info("getCenterByCenterId {}", centerId);
         return new ResponseEntity<>(
                 ResponseGeneral.of(200,"success",
                 centerService.getCenterByCenterId(centerId)), HttpStatus.OK);
@@ -141,7 +136,6 @@ public class CenterController {
     public ResponseEntity<?> findAllCenter(
           @RequestParam(required = false) Integer page)
     {
-        log.info(" findAllCenter with page {}", page);
         return new ResponseEntity<>(
                 ResponseGeneral.of(200,"success",
                         centerService.findAllCenter(page)), HttpStatus.OK);
@@ -175,7 +169,6 @@ public class CenterController {
             @Valid @RequestBody CenterRequest centerRequest
     )
     {
-        log.info("add Center : {}",centerRequest);
         return new ResponseEntity<>(
                 ResponseGeneral.of(201,"success",
                         centerService.createCenter(centerRequest)), HttpStatus.OK);
@@ -204,7 +197,6 @@ public class CenterController {
             @PathVariable("centerId") Integer centerId
     )
     {
-        log.info("deleteCenterByCenterId {}", centerId);
         centerService.deleteCenterByCenterId(centerId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -238,7 +230,6 @@ public class CenterController {
             @Valid @RequestBody CenterUpdateRequest centerUpdateRequest
     )
     {
-        log.info("update center by centerId", centerId);
         return new ResponseEntity<>(
                 ResponseGeneral.of(200,"success",
                         centerService.updateCenterByCenterId(centerId,centerUpdateRequest)), HttpStatus.OK);
@@ -270,7 +261,6 @@ public class CenterController {
     @GetMapping("/market/{marketId}")
     public ResponseEntity<?> findAllCenterByMarketID( @PathVariable("marketId") Integer marketId)
     {
-        log.info("findAllCenterByMarketID {}", marketId);
         return new ResponseEntity<>(
                 ResponseGeneral.of(200,"success",
                 centerService.findAllCenterByMarketID(marketId))
@@ -301,7 +291,6 @@ public class CenterController {
     @PostMapping("/{centerId}/freshers")
     public ResponseEntity<?> addFresherToCenter(@PathVariable int centerId, @RequestBody FresherCenterRequest fresherCenterRequest)
     {
-        log.info("addFresherToCenter {}", fresherCenterRequest);
         FresherCenterResponse fresher = historyWorkingService.addFresherToCenter(centerId, fresherCenterRequest.getFresherId());
         return new ResponseEntity<>(
                 ResponseGeneral.of(201,"success",
@@ -333,11 +322,72 @@ public class CenterController {
     @PutMapping("fresher/{fresherId}/center/{newCenterId}")
     public ResponseEntity<?> transferFresherToCenter(@PathVariable Integer fresherId, @PathVariable Integer newCenterId)
     {
-        log.info("transfer fresher:{} to center:{}",fresherId,newCenterId);
         FresherCenterResponse updatedFresher = historyWorkingService.transferFresherToCenter(fresherId, newCenterId);
         return new ResponseEntity<>(
                 ResponseGeneral.of(200,"success",
                         updatedFresher)
                 , HttpStatus.OK);
     }
+
+    @Operation( summary = "Merge two center to one center or one new center",
+            description =  "Merge two center to one center or one new center. This Api of Admin",
+            security = @SecurityRequirement(name = "bearerAuth"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Success",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                                    {
+                                       {
+                                        "status": 201,
+                                        "message": "success",
+                                        "data": {
+                                          "pooledHistoryId": 2,
+                                          "centerEnd": {
+                                            "workingId": 2,
+                                            "workingName": "Vmo Duy Tân",
+                                            "workingType": "CENTER",
+                                            "workingStatus": "lock",
+                                            "market": {
+                                              "workingId": 1,
+                                              "workingName": "Việt Nam",
+                                              "workingType": "MARKET",
+                                              "workingStatus": "active",
+                                              "market": null
+                                            }
+                                          },
+                                          "centerPoll": {
+                                            "workingId": 3,
+                                            "workingName": "Vmo Tôn Thất Thuyết",
+                                            "workingType": "CENTER",
+                                            "workingStatus": "lock",
+                                            "market": {
+                                              "workingId": 1,
+                                              "workingName": "Việt Nam",
+                                              "workingType": "MARKET",
+                                              "workingStatus": "active",
+                                              "market": null
+                                            }
+                                          },
+                                          "createAt": "2024-08-06T18:35:13.4269979"
+                                        },
+                                        "timestamp": "2024-08-06"
+                                      }
+                                    """))),
+    })
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @PostMapping("{centerId}/merge/{centerMergeID}")
+    public ResponseEntity<?> mergeCenter(
+        @PathVariable Integer centerId,
+        @PathVariable Integer centerMergeID
+    )
+    {
+        return new ResponseEntity<>(
+                ResponseGeneral.ofCreated("success",
+                        centerService.mergerCenter(centerId,centerMergeID ))
+                , HttpStatus.OK);
+    }
+
+
+
 }

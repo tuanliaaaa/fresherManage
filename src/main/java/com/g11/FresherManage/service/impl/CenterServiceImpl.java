@@ -3,7 +3,9 @@ package com.g11.FresherManage.service.impl;
 import com.g11.FresherManage.dto.request.center.CenterRequest;
 import com.g11.FresherManage.dto.request.center.CenterUpdateRequest;
 import com.g11.FresherManage.dto.response.center.CenterResponse;
+import com.g11.FresherManage.dto.response.centerHistory.CenterHistoryResponse;
 import com.g11.FresherManage.entity.Account;
+import com.g11.FresherManage.entity.CenterHistory;
 import com.g11.FresherManage.entity.Working;
 import com.g11.FresherManage.exception.account.UsernameNotFoundException;
 import com.g11.FresherManage.exception.base.UnauthorizedException;
@@ -11,6 +13,7 @@ import com.g11.FresherManage.exception.center.CenterNotFoundException;
 import com.g11.FresherManage.exception.market.MarketNotFoundException;
 import com.g11.FresherManage.exception.workinghistory.EmployeeNotWorkinWorkingException;
 import com.g11.FresherManage.repository.AccountRepository;
+import com.g11.FresherManage.repository.CenterHistoryRepository;
 import com.g11.FresherManage.repository.HistoryWorkingRepository;
 import com.g11.FresherManage.repository.WorkingRepository;
 import com.g11.FresherManage.service.AccountRoleService;
@@ -20,6 +23,7 @@ import com.g11.FresherManage.utils.UpdateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -30,8 +34,8 @@ import java.util.List;
 @Slf4j
 public class CenterServiceImpl implements CenterService {
     private final WorkingRepository workingRepository;
-    private final HistoryWorkingRepository historyWorkingRepository;
     private final AccountRepository accountRepository;
+    private final CenterHistoryRepository centerHistoryRepository;
     private final AccountRoleService accountRoleService;
     @Override
     public List<CenterResponse> findCenterByUsername(String username)
@@ -41,20 +45,15 @@ public class CenterServiceImpl implements CenterService {
                         () -> new UsernameNotFoundException()
                 );
         List <Working> workingList = new ArrayList<>();
-        if (userLogining.getPosition().equals("MARKETDIRECTOR")) {
-            for (String workingId:userLogining.getCurentWorking().split(","))
-            if(!workingId.endsWith("*")){
-                Working center =workingRepository.getCenterByCenterId(Integer.parseInt(workingId)).orElseThrow(
+        for (String workingId:userLogining.getCurentWorking().split(",")) {
+            if (!workingId.endsWith("*")) {
+                Working center = workingRepository.getCenterByCenterId(Integer.parseInt(workingId)).orElseThrow(
                         () -> new CenterNotFoundException()
                 );
                 workingList.add(center);
             }
-        }else {
-            for (String workingId:userLogining.getCurentWorking().split(","))
-                workingList.add(workingRepository.getById(Integer.parseInt(workingId)));
         }
         List<CenterResponse> centerResponseList = MapperUtils.toDTOs(workingList,CenterResponse.class);
-        log.info("findCenterByUsername:{}",centerResponseList);
         return centerResponseList ;
     }
 
@@ -62,9 +61,10 @@ public class CenterServiceImpl implements CenterService {
     @Override
     public CenterResponse getCenterByCenterId(Integer centerId)
     {
-
+        // Get list role of account logging
         List<String> roleList=accountRoleService.findRolesByUserLoging();
         if(!roleList.contains("ROLE_ADMIN")) {
+            //Check if this person is working in the center.
             String username = accountRoleService.getUsername();
             if(username == null) throw new UnauthorizedException();
             Account userLogining = accountRepository.findByUsername(username).
@@ -79,7 +79,6 @@ public class CenterServiceImpl implements CenterService {
                 ()-> new CenterNotFoundException()
         );
         CenterResponse centerResponse = MapperUtils.toDTO(center,CenterResponse.class);
-        log.info("getCenterByCenterId success:{}",centerResponse);
         return  centerResponse;
     }
 
@@ -89,7 +88,6 @@ public class CenterServiceImpl implements CenterService {
     {
         List<Working> centerList = workingRepository.findAllCenter(page*10,(page+1)*10);
         List<CenterResponse> centerResponses = MapperUtils.toDTOs(centerList,CenterResponse.class);
-        log.info("findAllCenter success:{}",centerResponses);
         return  centerResponses;
     }
 
@@ -101,7 +99,6 @@ public class CenterServiceImpl implements CenterService {
         );
         center.setWorkingStatus("lock");
         workingRepository.save(center);
-        log.info("delete success", center);
     }
 
     @Override
@@ -113,7 +110,6 @@ public class CenterServiceImpl implements CenterService {
         UpdateUtils.updateEntityFromDTO(center,centerUpdateRequest);
         workingRepository.save(center);
         CenterResponse centerResponse = MapperUtils.toDTO(center,CenterResponse.class);
-        log.info("update success", centerResponse);
         return centerResponse;
 
     }
@@ -130,7 +126,6 @@ public class CenterServiceImpl implements CenterService {
         );
         workingRepository.save(centerNew);
         CenterResponse centerResponse = MapperUtils.toDTO(centerNew,CenterResponse.class);
-        log.info("create success", centerResponse);
         return centerResponse;
     }
 
@@ -138,9 +133,27 @@ public class CenterServiceImpl implements CenterService {
     public List<CenterResponse> findAllCenterByMarketID(Integer marketId)
     {
         List<Working> centerList = workingRepository.findByMarket_MarketId(marketId);
-        log.info("findAllCenterByMarketID success:{}",centerList);
         return  MapperUtils.toDTOs(centerList,CenterResponse.class);
     }
 
+    @Transactional
+    @Override
+    public CenterHistoryResponse mergerCenter(Integer centerId, Integer centerMergerId)
+    {
+        Working centerOne = workingRepository.getCenterByCenterId(centerId).orElseThrow(
+                () -> new CenterNotFoundException()
+        );
+        Working centerTwo = workingRepository.getCenterByCenterId(centerMergerId).orElseThrow(
+                () -> new CenterNotFoundException()
+        );
+        centerTwo.setWorkingStatus("lock");
+        centerOne.setWorkingStatus("lock");
+        workingRepository.save(centerOne);
+        workingRepository.save(centerTwo);
+        CenterHistory centerHistoryNew =new CenterHistory(centerOne,centerTwo);
+        centerHistoryNew=centerHistoryRepository.save(centerHistoryNew);
+        return MapperUtils.toDTO(centerHistoryNew,CenterHistoryResponse.class);
+
+    }
 
 }

@@ -3,8 +3,8 @@ package com.g11.FresherManage.service;
 import com.g11.FresherManage.dto.request.center.CenterRequest;
 import com.g11.FresherManage.dto.request.center.CenterUpdateRequest;
 import com.g11.FresherManage.dto.response.center.CenterResponse;
+import com.g11.FresherManage.dto.response.centerHistory.CenterHistoryResponse;
 
-import java.security.Principal;
 import java.util.List;
 
 public interface CenterService {
@@ -15,4 +15,5 @@ public interface CenterService {
     void deleteCenterByCenterId(Integer centerId);
     CenterResponse updateCenterByCenterId(Integer centerId, CenterUpdateRequest centerUpdateRequest);
     CenterResponse createCenter(CenterRequest centerRequest);
+    CenterHistoryResponse mergerCenter(Integer centerId, Integer centermergerId);
 }
