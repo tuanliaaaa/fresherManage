@@ -43,7 +43,7 @@ public class MarketServiceImpl implements MarketService {
                         () -> new UsernameNotFoundException()
                 );
         List <Working> workingList = new ArrayList<>();
-
+        // Retrieve all the markets where this person is working.
         for (String workingId:userLogining.getCurentWorking().split(","))
             if(workingId.endsWith("*"))
             {
@@ -54,7 +54,6 @@ public class MarketServiceImpl implements MarketService {
                 workingList.add(market);
             }
         List<MarketResponse> marketResponseList = MapperUtils.toDTOs(workingList,MarketResponse.class);
-        log.info("findMarketOfUsername: marketResponseList={}",marketResponseList);
         return marketResponseList;
     }
 
@@ -62,8 +61,11 @@ public class MarketServiceImpl implements MarketService {
     @Override
     public MarketResponse getMarketByMarketId( Integer marketID)
     {
+        //Get list role of account logging
         List<String> roleList=accountRoleService.findRolesByUserLoging();
-        if(!roleList.contains("ROLE_ADMIN")) {
+        if(!roleList.contains("ROLE_ADMIN"))
+        {
+            //Check if this person is working in the market.
             String username = accountRoleService.getUsername();
             if (username == null) throw new UnauthorizedException();
             Account userLogining = accountRepository.findByUsername(username).
@@ -78,7 +80,6 @@ public class MarketServiceImpl implements MarketService {
                 ()-> new MarketNotFoundException()
         );
         MarketResponse marketResponse= MapperUtils.toDTO(center,MarketResponse.class);
-        log.info("get market by marketId succees {}",marketResponse);
         return  marketResponse;
     }
 
@@ -88,7 +89,6 @@ public class MarketServiceImpl implements MarketService {
     {
         List<Working> centerList = workingRepository.findAllMarket(page*10,(page+1)*10);
         List<MarketResponse> marketResponseList= MapperUtils.toDTOs(centerList,MarketResponse.class);
-        log.info("Find all market success: {}",marketResponseList);
         return marketResponseList;
     }
 
@@ -102,7 +102,6 @@ public class MarketServiceImpl implements MarketService {
         );
         market.setWorkingStatus("lock");
         workingRepository.save(market);
-        log.info("delete market success", market);
     }
 
     @Override
@@ -114,7 +113,6 @@ public class MarketServiceImpl implements MarketService {
         UpdateUtils.updateEntityFromDTO(market,marketUpdateRequest);
         workingRepository.save(market);
         MarketResponse marketResponse = MapperUtils.toDTO(market,MarketResponse.class);
-        log.info("update market success", marketResponse);
         return marketResponse;
 
     }
@@ -127,7 +125,6 @@ public class MarketServiceImpl implements MarketService {
         );
         workingRepository.save(marketNew);
         MarketResponse marketResponse = MapperUtils.toDTO(marketNew,MarketResponse.class);
-        log.info("create market success", marketResponse);
         return marketResponse;
     }
 

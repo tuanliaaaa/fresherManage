@@ -63,10 +63,9 @@ public class MarketController {
     public ResponseEntity<?> findAllMarket(
             @RequestParam(required = false) Integer page)
     {
-        log.info(" find All market with page {}", page);
         return new ResponseEntity<>(
                 ResponseGeneral.of(200,"success",
-                        marketService.findAllMarket(page)), HttpStatus.OK);
+                    marketService.findAllMarket(page)), HttpStatus.OK);
     }
 
     @Operation( summary = "Get all centers where the user is currently working.",
@@ -104,7 +103,6 @@ public class MarketController {
     @GetMapping("/me")
     public ResponseEntity<?> findMyMarket(Principal principal)
     {
-        log.info("getMyMarketInfor {}", principal.getName());
         return new ResponseEntity<>(
                 ResponseGeneral.of(200,"success",
                         marketService.findMarketOfUsername(principal.getName())), HttpStatus.OK);
@@ -138,7 +136,6 @@ public class MarketController {
     public ResponseEntity<?> getMarketByMarketId(
          @PathVariable("marketId") Integer marketId)
     {
-        log.info("get center by id: {}", marketId);
         return new ResponseEntity<>(
                 ResponseGeneral.of(200,"success",
                         marketService.getMarketByMarketId(marketId)), HttpStatus.OK);
@@ -172,7 +169,6 @@ public class MarketController {
             @Valid @RequestBody MarketRequest marketRequest
     )
     {
-        log.info("add market : {}",marketRequest);
         return new ResponseEntity<>(
                 ResponseGeneral.of(201,"success",
                         marketService.createMarket(marketRequest)), HttpStatus.OK);
@@ -201,7 +197,6 @@ public class MarketController {
             @PathVariable("marketId") Integer marketId
     )
     {
-        log.info("delete market by marketId: {}", marketId);
         marketService.deleteMarketByMarketId(marketId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -235,7 +230,6 @@ public class MarketController {
             @Valid @RequestBody MarketUpdateRequest marketUpdateRequest
     )
     {
-        log.info("update market by marketId", marketId);
         return new ResponseEntity<>(
                 ResponseGeneral.of(200,"success",
                         marketService.updateMarketByMarketId(marketId,marketUpdateRequest)), HttpStatus.OK);
