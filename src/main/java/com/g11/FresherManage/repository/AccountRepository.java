@@ -19,9 +19,6 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     @Query("SELECT ur.role.roleName FROM AccountRole ur WHERE ur.account.username = :username")
     List<String> findRolesByUsername(@Param("username") String username);
 
-    @Query("SELECT ur.role FROM AccountRole ur WHERE ur.account.username = :username")
-    List<Role> findRolesAllByUsername(@Param("username") String username);
-
     @Query("SELECT ac FROM Account as ac WHERE ac.username= :username AND ac.position = 'FRESHER'")
     Optional<Account> findFresherByUsername(@Param("username") String username);
 
@@ -31,8 +28,6 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
     @Query("SELECT ac FROM Account as ac WHERE ac.idUser=:fresherId AND ac.position = 'FRESHER'")
     Optional<Account> getByFresherId(Integer fresherId);
 
-    @Query(value = "SELECT * FROM Account WHERE position = 'FRESHER' LIMIT :limit OFFSET :offset", nativeQuery = true)
-    List<Account> findFreshersForAnotherAdmin(@Param("offset") int offset, @Param("limit") int limit);
 
     @Query(value = "SELECT ac.* FROM Account ac JOIN History_Working hw ON ac.id_User = hw.account_id WHERE ac.position = 'FRESHER' AND hw.working_id = :workingId LIMIT :limit OFFSET :offset", nativeQuery = true)
     List<Account> findFresherByWorkingId(@Param("workingId") Integer workingId, @Param("limit") Integer limit, @Param("offset") Integer offset);
@@ -63,6 +58,8 @@ public interface AccountRepository extends JpaRepository<Account, Integer> {
 
     @Query("SELECT COUNT(ac) FROM Account ac WHERE ac.position = 'FRESHER' AND ac.createdAt <= :searchDate AND (ac.endAt IS NULL OR ac.endAt >= :searchDate)")
     Long countFreshersActiveOnDate(@Param("searchDate") LocalDate searchDate);
+
+
 
 
 }

@@ -65,8 +65,6 @@ public class FresherController {
     @GetMapping("/me")
     public ResponseEntity<?> getMyFresherInfo(Principal principal)
     {
-
-        log.info("(getMyFresherInfo) username: {}", principal);
         String username = principal.getName();
         return new ResponseEntity<>(
                 ResponseGeneral.of(200,"success",
@@ -109,7 +107,6 @@ public class FresherController {
     @GetMapping("/{fresherId}")
     public ResponseEntity<?> getFresherByFresherId(@PathVariable Integer fresherId)
     {
-        log.info("(getFresherByFresherId) fresherId: {}", fresherId);
         return new ResponseEntity<>(
                 ResponseGeneral.of(200,"success",
                         fresherService.getFresherByFresherId(fresherId)),
@@ -151,7 +148,6 @@ public class FresherController {
     @GetMapping("/center/{centerId}")
     public ResponseEntity<?> findFresherByCenterId(@PathVariable Integer centerId,@RequestParam(defaultValue = "0") Integer page)
     {
-        log.info("find Fresher By Center Id: {}", centerId);
         return new ResponseEntity<>(
                 ResponseGeneral.of(200,"success",
                         fresherService.findFresherByCenterId(centerId, page)),
@@ -193,7 +189,6 @@ public class FresherController {
     @GetMapping("/market/{marketId}")
     public ResponseEntity<?> findFresherByMarketId(@PathVariable Integer marketId,@RequestParam(defaultValue = "0") Integer page)
     {
-        log.info("find Fresher By Market Id: {}", marketId);
         return new ResponseEntity<>(
                 ResponseGeneral.of(200,"success",
                         fresherService.findFresherByMarketId(marketId, page)),
@@ -242,7 +237,6 @@ public class FresherController {
     @GetMapping("")
     public ResponseEntity<?> findAllFreshers(@RequestParam(defaultValue = "0") Integer page)
     {
-        log.info("findAllFreshers with page:{}",page);
         return new ResponseEntity<>(ResponseGeneral.of(200,"success",fresherService.findAllFreshers(page)), HttpStatus.OK);
     }
 
@@ -270,7 +264,6 @@ public class FresherController {
     @DeleteMapping("/{fresherId}")
     public ResponseEntity<?> deleteFrdesherByFresherId(@PathVariable("fresherId") Integer fresherId)
     {
-        log.info("(DeleteFresherByFresherId) fresherId: {}", fresherId);
         fresherService.deleteFrdesherByFresherId(fresherId) ;
         return new ResponseEntity<>(
                 ResponseGeneral.ofSuccess("Delete Fresher Success"),HttpStatus.NO_CONTENT);
@@ -312,7 +305,6 @@ public class FresherController {
     @PostMapping("")
     public ResponseEntity<?> createFresher(@Valid @RequestBody FresherRequest fresherRequest)
     {
-        log.info("(FresherRequest) fresherRequest: {}", fresherRequest);
         return new ResponseEntity<>(
                 ResponseGeneral.ofCreated("success",
                         fresherService.createFresher(fresherRequest)),HttpStatus.CREATED);
@@ -355,7 +347,6 @@ public class FresherController {
             @PathVariable Integer fresherId,
             @Valid @RequestBody FresherUpdateRequest fresherUpdateRequest)
     {
-        log.info("Fresher {} update request: {}", fresherId ,fresherUpdateRequest);
         return new ResponseEntity<>(
                 ResponseGeneral.ofCreated("success",
                         fresherService.updateFresher(fresherId,fresherUpdateRequest)),HttpStatus.OK);

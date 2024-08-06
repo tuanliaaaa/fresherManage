@@ -2,6 +2,7 @@ package com.g11.FresherManage.exception;
 
 import com.g11.FresherManage.dto.ResponseError;
 import com.g11.FresherManage.exception.base.AccessDeniedException;
+import com.g11.FresherManage.exception.base.BadRequestException;
 import com.g11.FresherManage.exception.base.NotFoundException;
 import com.g11.FresherManage.exception.token.InvalidTokenException;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,13 @@ public class AdviceController {
         log.error(ex.getMessage());
         return new ResponseEntity<>(ResponseError.of(404,"Not Found",ex.getMessage(), ex.getCode()),HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ResponseError<String>> handleBadRequestException(BadRequestException ex) {
+        log.error(ex.getMessage());
+        return new ResponseEntity<>(ResponseError.of(400,"Bad Request",ex.getMessage(), ex.getCode()),HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<Object> handleUsernameNotFoundException(UsernameNotFoundException ex) {
         log.error(ex.getMessage());

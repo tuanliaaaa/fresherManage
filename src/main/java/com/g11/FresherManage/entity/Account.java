@@ -43,6 +43,7 @@ public class Account {
         this.phone = phone;
         this.position = position;
         this.is_active = "active";
+        this.createdAt = LocalDate.now();
         this.curentWorking = "";
     }
 }
