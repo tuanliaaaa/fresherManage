@@ -1,13 +1,17 @@
 package com.g11.FresherManage.service.impl;
 
+import com.g11.FresherManage.dto.request.message.MessageRequest;
 import com.g11.FresherManage.entity.Account;
 import com.g11.FresherManage.entity.AccountConservation;
 import com.g11.FresherManage.entity.Conservation;
 import com.g11.FresherManage.exception.account.UsernameNotFoundException;
+import com.g11.FresherManage.exception.conservation.ConservationNotFoundException;
 import com.g11.FresherManage.handler.ChatHandler;
 import com.g11.FresherManage.repository.AccountConservationRepository;
 import com.g11.FresherManage.repository.AccountRepository;
+import com.g11.FresherManage.repository.ConservationRepository;
 import com.g11.FresherManage.service.ChatService;
+import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -28,9 +32,12 @@ import java.util.concurrent.locks.Lock;
 @Slf4j
 public class ChatServiceImpl implements ChatService {
     private final AccountRepository accountRepository;
+    private final ConservationRepository conservationRepository;
+    private final Gson gson = new Gson();
     private final AccountConservationRepository accountConservationRepository;
     @Override
     public void addSession(WebSocketSession session, Lock lock,Map<String, Map<String,WebSocketSession>> topics,Map<String,Map<String,WebSocketSession>> sessions) throws Exception {
+        log.info("add session: {}", session.getId());
         session.getAttributes().put("topicsOfSession", new ArrayList<>());
         Account userLogining = accountRepository.findByUsername(session.getAttributes().get("username").toString()).
         orElseThrow(
@@ -54,18 +61,11 @@ public class ChatServiceImpl implements ChatService {
         ((List )session.getAttributes().get("topicsOfSession")).add(conservation.getConservationName());
         try {
             if(topics.get(conservation.getConservationName())== null){
-//                Map<String,WebSocketSession> sess= new HashMap<>();
                 Map<String,WebSocketSession> sessInTopic= new HashMap<>();
-//                sess.put(session.getId(),session);
                 sessInTopic.put(session.getId(),session);
-//                sessions.put(userLogining.getUsername(), sess);
                 topics.put(conservation.getConservationName(),sessInTopic);
-                log.info("addConservationDetail to topic with id:{}",session.getId());
-
             }else{
                     topics.get(conservation.getConservationName()).put(session.getId(),session);
-//                    sessions.get(userLogining.getUsername()).put(session.getId(),session);
-                    log.info("ddConservationDetail to topic with id:{}",session.getId());
             }
 
         } finally {
@@ -75,18 +75,24 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public void handleMessage(WebSocketSession session, TextMessage message,Lock lock,Map<String, Map<String,WebSocketSession>> topics,Map<String,Map<String,WebSocketSession>> sessions){
-        log.info("list toiec:{}",session.getAttributes().get("topicsOfSession"));
-        log.info("handleMessage topic:{}",message.getPayload());
-        Map<String,WebSocketSession> listSocketInTopic=topics.get(message.getPayload());
-        log.info("handleMessage listSocketInTopic:{}",listSocketInTopic);
-        lock.lock();
-        for(Map.Entry<String,WebSocketSession> entry:listSocketInTopic.entrySet())
-        {
-           sendMessage(session,message,entry.getValue());
+    public void handleMessage(WebSocketSession session, TextMessage message,Lock lock,Map<String, Map<String,WebSocketSession>> topics,Map<String,Map<String,WebSocketSession>> sessions) throws IOException {
+        try {
+            MessageRequest msg = gson.fromJson(message.getPayload(), MessageRequest.class);
+            log.info("handleMessage topic:{}",msg);
+            Conservation conservation =conservationRepository.findById(msg.getConservationId()).orElseThrow(
+                    ()-> new ConservationNotFoundException()
+            );
+            Map<String,WebSocketSession> listSocketInTopic=topics.get(conservation.getConservationName());
+            lock.lock();
+            for(Map.Entry<String,WebSocketSession> entry:listSocketInTopic.entrySet())
+            {
+                sendMessage(session,message,entry.getValue());
+            }
+            lock.unlock();
         }
-        lock.unlock();
-
+        catch (Exception e) {
+            session.sendMessage(new TextMessage("Lỗi Định dạng"));
+        }
     }
 
     @Override
@@ -99,7 +105,6 @@ public class ChatServiceImpl implements ChatService {
         if (ed.isOpen()) {
             try {
                 ed.sendMessage(new TextMessage(message.getPayload()));
-                log.info("handleMessage session id:{}",session.getAttributes().get("username"));
             } catch (IOException e) {
                 e.printStackTrace();
             }

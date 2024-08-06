@@ -1,7 +1,6 @@
 package com.g11.FresherManage.handler;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.g11.FresherManage.repository.AccountConservationRepository;
 import com.g11.FresherManage.repository.ConservationRepository;
 import com.g11.FresherManage.service.ChatService;
@@ -26,7 +25,6 @@ public class ChatHandler extends TextWebSocketHandler {
     public static Map<String,Map<String,WebSocketSession>> sessions = new HashMap<>();
     private final ExecutorService executorService = Executors.newCachedThreadPool();
     public static Lock lock = new ReentrantLock();
-    private final ObjectMapper objectMapper = new ObjectMapper();
     public final Map<String,Map<String,WebSocketSession>> topics = new ConcurrentHashMap<>();
     private final ChatService chatService;
     @Override

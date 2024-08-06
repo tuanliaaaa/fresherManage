@@ -1,9 +1,12 @@
 package com.g11.FresherManage.security;
 
+import com.google.gson.Gson;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -17,6 +20,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Configuration
@@ -85,6 +91,23 @@ public class    SecurityConfiguration {
     return source;
   }
 
-
+//    @Bean
+//    public Gson gson() {
+//        return new Gson();
+//    }
+//
+//    @Bean(name = "customMessageConverters")
+//    public HttpMessageConverter<Object> createGsonHttpMessageConverter() {
+//        GsonHttpMessageConverter gsonConverter = new GsonHttpMessageConverter();
+//        gsonConverter.setGson(gson());
+//        return gsonConverter;
+//    }
+//
+//    @Bean
+//    public List<HttpMessageConverter<?>> messageConverters() {
+//        List<HttpMessageConverter<?>> converters = new ArrayList<>();
+//        converters.add(createGsonHttpMessageConverter());
+//        return converters;
+//    }
 
 }
